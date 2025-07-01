@@ -1,0 +1,21 @@
+
+.ant-layout-content {
+  margin: 0;
+}
+
+/* Chat item styles */
+.chat-item:hover {
+  background-color: #f0f0f0 !important;
+  transition: background-color 0.2s ease;
+}
+
+.avatar-user {
+  position: absolute;
+  top: 90%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  background-color: #87d068;
+  border: 2px solid #fff;
+}
