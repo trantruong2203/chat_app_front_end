@@ -5,9 +5,9 @@ import RecentChats from '../components/RecentChats';
 
 function Home() {
     return (
-        <Layout style={{ maxHeight: '100vh' }}>
-            <Navbar />
+        <Layout style={{ height: '100vh', overflow: 'hidden' }}>
             <Layout style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+                <Navbar />
                 <RecentChats />
                 <Main />
             </Layout>

@@ -6,17 +6,22 @@ import { store } from './stores/store.ts'
 import ClientRouter from './routers/ClientRouter.js'
 import Fetcher from './Fetcher.ts';
 import AuthProvider from './contexts/AuthProvider.tsx'
+import { ConfigProvider } from 'antd'
+import ToastifyNotification from './services/ToastifyNotification'
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <BrowserRouter>
-
     <Provider store={store}>
-      <AuthProvider>
-        <Fetcher />
-        <ClientRouter />
-      </AuthProvider>
-    </Provider >
+      <ConfigProvider>
+        <AuthProvider>
+          <Fetcher />
+          <ClientRouter />
+          <ToastifyNotification />
+        </AuthProvider>
+      </ConfigProvider>
+    </Provider>
   </BrowserRouter>
 )

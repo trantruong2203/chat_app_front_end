@@ -13,9 +13,7 @@ import {
   Input, 
   Card, 
   Typography, 
-  Divider, 
-  Row, 
-  Col, 
+  Divider,
 } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUser } from '../features/users/userThunks.ts';
@@ -37,158 +35,200 @@ const Register: React.FC = () => {
     const emailExists : boolean = items.some((user : UserResponse) => user.email === values.email || user.phone === values.phone);
     if (emailExists) {
       toast.error('Email hoặc số điện thoại đã được sử dụng!');
-      alert('Email hoặc số điện thoại đã được sử dụng!');
       return;
     }
     dispatch(createUser(values));
     toast.success('Đăng ký thành công!');
-    alert('Đăng ký thành công!');
     navigate('/');
-    // Xử lý đăng ký ở đây
   };
 
   return (
-    <Row justify="center" align="middle" style={{ minHeight: '100vh', background: '#f0f2f5' }}>
-      <Col xs={22} sm={16} md={12} lg={8} xl={6}>
-        <Card 
-          variant="outlined"
-          style={{ 
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-            borderRadius: '8px',
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <WechatOutlined style={{ fontSize: 48, color: '#1677ff' }} />
-            <Title level={2} style={{ marginTop: 16, marginBottom: 8 }}>Đăng ký</Title>
-            <Text type="secondary">Tạo tài khoản mới</Text>
+    <div className="auth-background" style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      position: 'relative'
+    }}>
+      <div className="glass-effect" style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        zIndex: 0
+      }}></div>
+      
+      <Card
+        className="glass-effect fade-in"
+        style={{
+          width: '450px',
+          padding: '10px 20px',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-lg)',
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(10px)',
+          border: 'none',
+          zIndex: 1
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 30 }}>
+          <div className="gradient-bg" style={{ 
+            width: '70px', 
+            height: '70px', 
+            borderRadius: '50%', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            margin: '0 auto 16px',
+            boxShadow: 'var(--shadow-md)'
+          }}>
+            <WechatOutlined style={{ fontSize: 36, color: 'white' }} />
           </div>
+          <Title level={2} style={{ marginTop: 16, marginBottom: 8, color: 'var(--text-primary)' }}>Đăng ký</Title>        </div>
           
-          <Form
-            form={form}
-            name="register"
-            onFinish={onFinish}
-            size="large"
-            layout="vertical"
-            scrollToFirstError
+        <Form
+          form={form}
+          name="register"
+          onFinish={onFinish}
+          size="large"
+          layout="vertical"
+          scrollToFirstError
+        >
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                type: 'email',
+                message: 'Email không hợp lệ!',
+              },
+              {
+                required: true,
+                message: 'Vui lòng nhập email!',
+              },
+            ]}
           >
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  type: 'email',
-                  message: 'Email không hợp lệ!',
-                },
-                {
-                  required: true,
-                  message: 'Vui lòng nhập email!',
-                },
-              ]}
-            >
-              <Input 
-                prefix={<MailOutlined style={{ color: '#bfbfbf' }} />} 
-                placeholder="Email" 
-              />
-            </Form.Item>
+            <Input 
+              className="message-input"
+              prefix={<MailOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
+              placeholder="Email" 
+              style={{ height: '46px' }}
+            />
+          </Form.Item>
 
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!', whitespace: true }]}
-            >
-              <Input 
-                prefix={<UserOutlined style={{ color: '#bfbfbf' }} />} 
-                placeholder="Tên người dùng" 
-              />
-            </Form.Item>
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!', whitespace: true }]}
+          >
+            <Input 
+              className="message-input"
+              prefix={<UserOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
+              placeholder="Tên người dùng" 
+              style={{ height: '46px' }}
+            />
+          </Form.Item>
 
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng nhập mật khẩu!',
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: 'Vui lòng nhập mật khẩu!',
+              },
+            ]}
+            hasFeedback
+          >
+            <Input.Password 
+              className="message-input"
+              prefix={<LockOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
+              placeholder="Mật khẩu" 
+              style={{ height: '46px' }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="confirm"
+            dependencies={['password']}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: 'Vui lòng xác nhận mật khẩu!',
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Mật khẩu nhập lại không khớp!'));
                 },
-              ]}
-              hasFeedback
-            >
-              <Input.Password 
-                prefix={<LockOutlined style={{ color: '#bfbfbf' }} />} 
-                placeholder="Mật khẩu" 
-              />
-            </Form.Item>
+              }),
+            ]}
+          >
+            <Input.Password 
+              className="message-input"
+              prefix={<LockOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
+              placeholder="Xác nhận mật khẩu" 
+              style={{ height: '46px' }}
+            />
+          </Form.Item>
 
-            <Form.Item
-              name="confirm"
-              dependencies={['password']}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng xác nhận mật khẩu!',
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Mật khẩu nhập lại không khớp!'));
-                  },
-                }),
-              ]}
-            >
-              <Input.Password 
-                prefix={<LockOutlined style={{ color: '#bfbfbf' }} />} 
-                placeholder="Xác nhận mật khẩu" 
-              />
-            </Form.Item>
+          <Form.Item
+            name="phone"
+            rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+          >
+            <Input 
+              className="message-input"
+              prefix={<PhoneOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
+              placeholder="Số điện thoại" 
+              style={{ height: '46px' }}
+            />
+          </Form.Item>
 
-            <Form.Item
-              name="phone"
-              rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+          <Form.Item
+            name="agreement"
+            valuePropName="checked"
+            rules={[
+              {
+                validator: (_, value) =>
+                  value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản')),
+              },
+            ]}
+          >
+            <Checkbox>
+              Tôi đã đọc và đồng ý với <a href="" style={{ color: 'var(--primary-color)' }}>điều khoản</a>
+            </Checkbox>
+          </Form.Item>
+          
+          <Form.Item >
+            <Button 
+              block 
+              type="primary"
+              htmlType="submit"
+              style={{ 
+                height: '46px', 
+                borderRadius: 'var(--radius-md)', 
+                border: 'none',
+                fontWeight: '500',
+                fontSize: '16px',
+                boxShadow: 'var(--shadow-md)'
+              }}
             >
-              <Input 
-                prefix={<PhoneOutlined style={{ color: '#bfbfbf' }} />} 
-                placeholder="Số điện thoại" 
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="agreement"
-              valuePropName="checked"
-              rules={[
-                {
-                  validator: (_, value) =>
-                    value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản')),
-                },
-              ]}
-            >
-              <Checkbox>
-                Tôi đã đọc và đồng ý với <a href="">điều khoản</a>
-              </Checkbox>
-            </Form.Item>
-            
-            <Form.Item >
-              <Button 
-                block 
-                type="primary" 
-                htmlType="submit"
-                style={{ height: '40px', borderRadius: '6px' }}
-              >
-                Đăng ký
-              </Button>
-            </Form.Item>
-            
-            <Divider plain>
-              <Text type="secondary" style={{ fontSize: '14px' }}>Hoặc</Text>
-            </Divider>
-            
-            <div style={{ textAlign: 'center' }}>
-              <Text type="secondary" style={{ marginRight: 8 }}>Đã có tài khoản?</Text>
-              <Link to="/login" style={{ color: '#1677ff' }}>Đăng nhập ngay!</Link>
-            </div>
-          </Form>
-        </Card>
-      </Col>
-    </Row>
+              Đăng ký
+            </Button>
+          </Form.Item>
+          
+          <Divider plain>
+            <Text style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>Hoặc</Text>
+          </Divider>
+          
+          <div style={{ textAlign: 'center' }}>
+            <Text style={{ marginRight: 8, color: 'var(--text-secondary)' }}>Đã có tài khoản?</Text>
+            <Link to="/" style={{ color: 'var(--primary-color)', fontWeight: '500' }}>Đăng nhập ngay!</Link>
+          </div>
+        </Form>
+      </Card>
+    </div>
   );
 };
 

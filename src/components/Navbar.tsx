@@ -45,34 +45,53 @@ const Navbar: React.FC = () => {
 
 
   return (
-        <Sider
-          collapsible
-          collapsed={collapsed}
-          onCollapse={(value) => setCollapsed(value)}
-          style={{ borderRight: '1px solid #f0f0f0' }}
-        >
-          <Avatar
-            style={{
-              margin: '16px',
-              backgroundColor: '#87d068',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '40px',
-              height: '40px',
-            }}  
-            icon={<UserOutlined />}
-            onClick={showModal}
-          />
-        
-          <Menu
-            theme="dark"
-            defaultSelectedKeys={['1']}
-            mode="inline"
-            items={items}
-          />
-          <UserModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
-        </Sider >
+    <Sider
+      className="app-navbar"
+      collapsible
+      collapsed={collapsed}
+      onCollapse={(value) => setCollapsed(value)}
+      style={{ 
+        borderRight: '1px solid var(--border-light)',
+        boxShadow: 'var(--shadow-sm)',
+        zIndex: 1000
+      }}
+    >
+      <div 
+        className="gradient-bg" 
+        style={{ 
+          padding: '20px 0', 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          marginBottom: '10px'
+        }}
+      >
+        <Avatar
+          className="user-avatar"
+          style={{
+            backgroundColor: 'white',
+            color: 'var(--primary-color)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '40px',
+            height: '40px',
+            boxShadow: 'var(--shadow-md)'
+          }}  
+          icon={<UserOutlined />}
+          onClick={showModal}
+        />
+      </div>
+    
+      <Menu
+        theme="dark"
+        defaultSelectedKeys={['1']}
+        mode="inline"
+        items={items}
+        style={{ borderRight: 0 }}
+      />
+      <UserModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+    </Sider >
   );
 };
 

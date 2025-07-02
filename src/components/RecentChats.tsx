@@ -11,44 +11,108 @@ const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?
 
 function RecentChats(): React.ReactElement {
     return (
-        <div style={{ padding: '10px', border: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#f9f9f9' }}>
-
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', gap: '10px', alignItems: 'center', marginBottom: '15px' }}>
-                <Search placeholder="Tìm kiếm" allowClear onSearch={onSearch} style={{ width: 200 }} />
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
-                    <MdPersonAdd size={24} color='#1890ff' style={{ cursor: 'pointer' }} />
-                    <MdGroupAdd size={24} color='#1890ff' style={{ cursor: 'pointer' }} />
+        <div className="recent-chats-container bg-pattern" style={{ 
+            padding: '16px', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            height: '100%',
+            width: '320px',
+        }}>
+            <div style={{ 
+                display: 'flex', 
+                flexDirection: 'row', 
+                justifyContent: 'space-between', 
+                gap: '10px', 
+                alignItems: 'center', 
+                marginBottom: '20px' 
+            }}>
+                <Search 
+                    placeholder="Tìm kiếm" 
+                    allowClear 
+                    onSearch={onSearch} 
+                    style={{ 
+                        width: '100%',
+                        borderRadius: 'var(--radius-md)'
+                    }} 
+                />
+                <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    gap: '15px' 
+                }}>
+                    <div className="glass-effect" style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer'
+                    }}>
+                        <MdPersonAdd size={20} color='var(--primary-color)' />
+                    </div>
+                    <div className="glass-effect" style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer'
+                    }}>
+                        <MdGroupAdd size={20} color='var(--primary-color)' />
+                    </div>
                 </div>
             </div>
 
-            <h3 style={{ marginBottom: '10px', borderBottom: '1px solid #e0e0e0', paddingBottom: '8px' }}>Trò chuyện gần đây</h3>
+            <h3 style={{ 
+                marginBottom: '16px', 
+                borderBottom: '1px solid var(--border-light)', 
+                paddingBottom: '12px',
+                fontWeight: '600',
+                color: 'var(--text-primary)'
+            }}>Trò chuyện gần đây</h3>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflow: 'auto' }}>
+            <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '12px', 
+                overflow: 'auto',
+                paddingRight: '6px'
+            }}>
                 {/* Cuộc trò chuyện 1 */}
                 <div style={{ 
                     display: 'flex', 
-                    padding: '10px', 
-                    borderRadius: '8px',
-                    backgroundColor: '#fff', 
+                    padding: '12px', 
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-primary)', 
                     cursor: 'pointer',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                    boxShadow: 'var(--shadow-sm)',
                 }}
-                className="chat-item"
+                className="chat-item fade-in"
                 >
                     <Badge dot status="success" offset={[-4, 38]}>
-                        <Avatar size={40} icon={<UserOutlined />} />
+                        <Avatar 
+                            className="user-avatar" 
+                            size={46} 
+                            icon={<UserOutlined />} 
+                            style={{ 
+                                backgroundColor: 'var(--primary-light)' 
+                            }} 
+                        />
                     </Badge>
-                    <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ marginLeft: '14px', flex: 1, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 'bold' }}>Nguyễn Văn A</span>
-                            <span style={{ fontSize: '12px', color: '#999' }}>12:00</span>
+                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Nguyễn Văn A</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>12:00</span>
                         </div>
                         <div style={{ 
                             fontSize: '13px', 
-                            color: '#666', 
+                            color: 'var(--text-secondary)', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 
-                            textOverflow: 'ellipsis' 
+                            textOverflow: 'ellipsis',
+                            marginTop: '3px'
                         }}>
                             Chào bạn, hẹn gặp lại vào chiều nay nhé!
                         </div>
@@ -58,26 +122,35 @@ function RecentChats(): React.ReactElement {
                 {/* Cuộc trò chuyện 2 */}
                 <div style={{ 
                     display: 'flex', 
-                    padding: '10px', 
-                    borderRadius: '8px',
-                    backgroundColor: '#fff', 
+                    padding: '12px', 
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-primary)', 
                     cursor: 'pointer',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                    boxShadow: 'var(--shadow-sm)'
                 }}
-                className="chat-item"
+                className="chat-item fade-in"
                 >
-                    <Avatar size={40} style={{ backgroundColor: '#1677ff' }}>T</Avatar>
-                    <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
+                    <Avatar 
+                        className="user-avatar"
+                        size={46} 
+                        style={{ 
+                            backgroundColor: 'var(--accent-color)'
+                        }}
+                    >
+                        T
+                    </Avatar>
+                    <div style={{ marginLeft: '14px', flex: 1, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 'bold' }}>Trần Thị B</span>
-                            <span style={{ fontSize: '12px', color: '#999' }}>Hôm qua</span>
+                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Trần Thị B</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Hôm qua</span>
                         </div>
                         <div style={{ 
                             fontSize: '13px', 
-                            color: '#666', 
+                            color: 'var(--text-secondary)', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 
-                            textOverflow: 'ellipsis' 
+                            textOverflow: 'ellipsis',
+                            marginTop: '3px'
                         }}>
                             Bạn đã nhận được file tài liệu chưa?
                         </div>
@@ -87,28 +160,37 @@ function RecentChats(): React.ReactElement {
                 {/* Cuộc trò chuyện nhóm */}
                 <div style={{ 
                     display: 'flex', 
-                    padding: '10px', 
-                    borderRadius: '8px',
-                    backgroundColor: '#fff', 
+                    padding: '12px', 
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: 'var(--bg-primary)', 
                     cursor: 'pointer',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                    boxShadow: 'var(--shadow-sm)'
                 }}
-                className="chat-item"
+                className="chat-item fade-in"
                 >
                     <Badge count={3} size="small" offset={[-2, 38]}>
-                        <Avatar size={40} style={{ backgroundColor: '#52c41a' }}>N</Avatar>
+                        <Avatar 
+                            className="user-avatar"
+                            size={46} 
+                            style={{ 
+                                backgroundColor: 'var(--secondary-color)'
+                            }}
+                        >
+                            N
+                        </Avatar>
                     </Badge>
-                    <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ marginLeft: '14px', flex: 1, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 'bold' }}>Nhóm dự án</span>
-                            <span style={{ fontSize: '12px', color: '#999' }}>09:45</span>
+                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Nhóm dự án</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>09:45</span>
                         </div>
                         <div style={{ 
                             fontSize: '13px', 
-                            color: '#666', 
+                            color: 'var(--text-secondary)', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 
-                            textOverflow: 'ellipsis' 
+                            textOverflow: 'ellipsis',
+                            marginTop: '3px' 
                         }}>
                             Lê C: Mọi người chuẩn bị họp lúc 2h chiều nhé
                         </div>
