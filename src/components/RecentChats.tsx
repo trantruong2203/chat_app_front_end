@@ -9,7 +9,13 @@ const { Search } = Input;
 
 const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
-function RecentChats(): React.ReactElement {
+interface RecentChatsProps {
+    setIsAddFriendModalOpen: (isAddFriendModalOpen: boolean) => void;
+    setIsAddGroupModalOpen: (isAddGroupModalOpen: boolean) => void;
+}
+
+function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: RecentChatsProps): React.ReactElement {
+
     return (
         <div className="recent-chats-container bg-pattern" style={{ 
             padding: '16px', 
@@ -49,7 +55,7 @@ function RecentChats(): React.ReactElement {
                         alignItems: 'center',
                         cursor: 'pointer'
                     }}>
-                        <MdPersonAdd size={20} color='var(--primary-color)' />
+                        <MdPersonAdd size={20} color='var(--primary-color)' onClick={() => setIsAddFriendModalOpen(true)} />
                     </div>
                     <div className="glass-effect" style={{
                         width: '36px',
@@ -60,7 +66,7 @@ function RecentChats(): React.ReactElement {
                         alignItems: 'center',
                         cursor: 'pointer'
                     }}>
-                        <MdGroupAdd size={20} color='var(--primary-color)' />
+                        <MdGroupAdd size={20} color='var(--primary-color)' onClick={() => setIsAddGroupModalOpen(true)} />
                     </div>
                 </div>
             </div>

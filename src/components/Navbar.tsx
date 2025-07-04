@@ -3,7 +3,7 @@ import { FileOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Avatar, Layout, Menu } from 'antd';
 import { MdContacts, MdGroups, MdMessage } from 'react-icons/md';
-import UserModal from '../pages/modal/UserModal';
+
 
 type MenuItem = Required<MenuProps>['items'][number];
 const { Sider } = Layout;
@@ -35,13 +35,8 @@ const items: MenuItem[] = [
   getItem('Files', '9', <FileOutlined />),
 ];
 
-const Navbar: React.FC = () => {
+  const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void }> = ({ setIsUserModalOpen }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
 
 
   return (
@@ -79,7 +74,7 @@ const Navbar: React.FC = () => {
             boxShadow: 'var(--shadow-md)'
           }}  
           icon={<UserOutlined />}
-          onClick={showModal}
+          onClick={() => setIsUserModalOpen(true)}
         />
       </div>
     
@@ -90,7 +85,7 @@ const Navbar: React.FC = () => {
         items={items}
         style={{ borderRight: 0 }}
       />
-      <UserModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      
     </Sider >
   );
 };

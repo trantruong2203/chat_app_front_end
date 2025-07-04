@@ -8,8 +8,10 @@ interface UserState {
     username: string;
     password: string;
     email: string;
-    phone: number
+    phone: number;
     status: string;
+    gender?: string;
+    dob?: Date;
   };
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -22,6 +24,8 @@ const innerValue = {
   email: '',
   phone: 0,
   status: '',
+  gender: '',
+  dob: undefined,
 };
 
 const userSlice = createSlice({
@@ -79,8 +83,10 @@ const userSlice = createSlice({
           username: userData.username || '',
           email: userData.email || '',
           password: userData.password || '',
-          phone: userData.phone || 0,
+          phone: Number(userData.phone) || 0,
           status: '',
+          gender: userData.gender || '',
+          dob: userData.dob,
         };
         state.error = null; 
       })

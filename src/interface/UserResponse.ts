@@ -1,16 +1,20 @@
 export  interface UserResponse {
   email: string;
+  avatar: string;
   password: string;
   confirm: string;
   username: string;
-  phone: number;
+  phone: string;
+  gender: string;
   dob: Date;
   agreement: boolean;
 };
 export interface LoginResponse {
   username: string;
+  avatar: string;
+  gender: string;
   dob: Date;
-  phone: number;
+  phone: string;
   agreement: boolean;
   email: string;
   password: string;

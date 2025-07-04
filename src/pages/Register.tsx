@@ -47,7 +47,10 @@ const Register: React.FC = () => {
       display: 'flex', 
       justifyContent: 'center', 
       alignItems: 'center',
-      position: 'relative'
+      position: 'relative',
+      height: '100vh',
+      width: '100%',
+      overflow: 'auto',
     }}>
       <div className="glass-effect" style={{
         position: 'absolute',
@@ -62,36 +65,40 @@ const Register: React.FC = () => {
       <Card
         className="glass-effect fade-in"
         style={{
-          width: '450px',
-          padding: '10px 20px',
+          width: '400px',
+          maxHeight: '95vh',
+          overflow: 'auto',
+          padding: '5px 15px',
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-lg)',
           backgroundColor: 'rgba(255, 255, 255, 0.85)',
           backdropFilter: 'blur(10px)',
           border: 'none',
-          zIndex: 1
+          zIndex: 1,
+          margin: '10px 0'
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: 30 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div className="gradient-bg" style={{ 
-            width: '70px', 
-            height: '70px', 
+            width: '60px', 
+            height: '60px', 
             borderRadius: '50%', 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
-            margin: '0 auto 16px',
+            margin: '0 auto 12px',
             boxShadow: 'var(--shadow-md)'
           }}>
-            <WechatOutlined style={{ fontSize: 36, color: 'white' }} />
+            <WechatOutlined style={{ fontSize: 30, color: 'white' }} />
           </div>
-          <Title level={2} style={{ marginTop: 16, marginBottom: 8, color: 'var(--text-primary)' }}>Đăng ký</Title>        </div>
+          <Title level={3} style={{ marginTop: 10, marginBottom: 5, color: 'var(--text-primary)' }}>Đăng ký</Title>
+        </div>
           
         <Form
           form={form}
           name="register"
           onFinish={onFinish}
-          size="large"
+          size="middle"
           layout="vertical"
           scrollToFirstError
         >
@@ -112,7 +119,7 @@ const Register: React.FC = () => {
               className="message-input"
               prefix={<MailOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
               placeholder="Email" 
-              style={{ height: '46px' }}
+              style={{ height: '40px' }}
             />
           </Form.Item>
 
@@ -124,7 +131,7 @@ const Register: React.FC = () => {
               className="message-input"
               prefix={<UserOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
               placeholder="Tên người dùng" 
-              style={{ height: '46px' }}
+              style={{ height: '40px' }}
             />
           </Form.Item>
 
@@ -142,7 +149,7 @@ const Register: React.FC = () => {
               className="message-input"
               prefix={<LockOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
               placeholder="Mật khẩu" 
-              style={{ height: '46px' }}
+              style={{ height: '40px' }}
             />
           </Form.Item>
 
@@ -169,7 +176,7 @@ const Register: React.FC = () => {
               className="message-input"
               prefix={<LockOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
               placeholder="Xác nhận mật khẩu" 
-              style={{ height: '46px' }}
+              style={{ height: '40px' }}
             />
           </Form.Item>
 
@@ -181,7 +188,7 @@ const Register: React.FC = () => {
               className="message-input"
               prefix={<PhoneOutlined style={{ color: 'var(--primary-color)', opacity: 0.7 }} />} 
               placeholder="Số điện thoại" 
-              style={{ height: '46px' }}
+              style={{ height: '40px' }}
             />
           </Form.Item>
 
@@ -206,11 +213,11 @@ const Register: React.FC = () => {
               type="primary"
               htmlType="submit"
               style={{ 
-                height: '46px', 
+                height: '40px', 
                 borderRadius: 'var(--radius-md)', 
                 border: 'none',
                 fontWeight: '500',
-                fontSize: '16px',
+                fontSize: '15px',
                 boxShadow: 'var(--shadow-md)'
               }}
             >
@@ -218,12 +225,12 @@ const Register: React.FC = () => {
             </Button>
           </Form.Item>
           
-          <Divider plain>
-            <Text style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>Hoặc</Text>
+          <Divider plain style={{ margin: '10px 0' }}>
+            <Text style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>Hoặc</Text>
           </Divider>
           
-          <div style={{ textAlign: 'center' }}>
-            <Text style={{ marginRight: 8, color: 'var(--text-secondary)' }}>Đã có tài khoản?</Text>
+          <div style={{ textAlign: 'center', marginBottom: '5px' }}>
+            <Text style={{ marginRight: 5, color: 'var(--text-secondary)' }}>Đã có tài khoản?</Text>
             <Link to="/" style={{ color: 'var(--primary-color)', fontWeight: '500' }}>Đăng nhập ngay!</Link>
           </div>
         </Form>
