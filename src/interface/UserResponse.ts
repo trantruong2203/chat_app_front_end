@@ -6,14 +6,14 @@ export  interface UserResponse {
   username: string;
   phone: string;
   gender: string;
-  dob: Date;
+  birthday: Date;
   agreement: boolean;
 };
 export interface LoginResponse {
   username: string;
   avatar: string;
   gender: string;
-  dob: Date;
+  birthday: Date;
   phone: string;
   agreement: boolean;
   email: string;

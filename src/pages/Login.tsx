@@ -14,13 +14,15 @@ const { Title, Text } = Typography;
 const Login: React.FC = () => {
   const [form] = Form.useForm<LoginRequest>();
   const dispatch = useDispatch<AppDispatch>();
-  const { saveLocal } = useContext(ContextAuth);
   const navigate = useNavigate();
 
   const onFinish = async (values: LoginRequest): Promise<void> => {
     try {
       const user = await dispatch(loginUser(values)).unwrap();
-      saveLocal("account", user.email);
+      if (!user) {
+        toast.error("Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!");
+        return;
+      }
       navigate('/home');
       toast.success("Đăng nhập thành công!");
     } catch (error: unknown) {

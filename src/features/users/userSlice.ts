@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createUser, getUsers, loginUser } from './userThunks';
+import { createUser, getUsers, loginUser, updateUserThunk } from './userThunks';
 import type { LoginResponse, UserResponse } from '../../interface/UserResponse';
 
 interface UserState {
@@ -8,10 +8,9 @@ interface UserState {
     username: string;
     password: string;
     email: string;
-    phone: number;
-    status: string;
+    phone: string;
     gender?: string;
-    dob?: Date;
+    birthday?: Date;
   };
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -22,10 +21,9 @@ const innerValue = {
   username: '',
   password: '',
   email: '',
-  phone: 0,
-  status: '',
+  phone: '',
   gender: '',
-  dob: undefined,
+  birthday: undefined,
 };
 
 const userSlice = createSlice({
@@ -83,14 +81,28 @@ const userSlice = createSlice({
           username: userData.username || '',
           email: userData.email || '',
           password: userData.password || '',
-          phone: Number(userData.phone) || 0,
-          status: '',
+          phone: userData.phone || '',
           gender: userData.gender || '',
-          dob: userData.dob,
+          birthday: userData.birthday,
         };
         state.error = null; 
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.error = action.payload as string || null;
+      })
+
+      // UPDATE
+      .addCase(updateUserThunk.fulfilled, (state, action) => {
+        const userData = action.payload as UserResponse;
+        state.user = {
+          ...userData,
+          phone: userData.phone || '',
+          birthday: userData.birthday ? new Date(userData.birthday) : undefined,
+          gender: userData.gender || ''
+        };
+        state.error = null;
+      })
+      .addCase(updateUserThunk.rejected, (state, action) => {
         state.error = action.payload as string || null;
       })
 
