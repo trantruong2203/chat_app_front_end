@@ -1,17 +1,48 @@
+:root {
+  --wechat-green: #07C160;
+  --wechat-light-green: #09e070;
+  --wechat-dark-green: #06a854;
+  --wechat-bg: #F4F4F4;
+  --wechat-chat-bg: #EDEDED;
+  --wechat-message-sent: #95EC69;
+  --wechat-message-received: #FFFFFF;
+  --wechat-text: #000000;
+  --wechat-text-secondary: #666666;
+  --wechat-text-tertiary: #9E9E9E;
+  --wechat-border: #E5E5E5;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --radius-md: 6px;
+  --border-light: #E5E5E5;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --bg-tertiary: #FAFAFA;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --text-tertiary: #666666;
+  --primary-color: var(--wechat-green);
+  --primary-light: var(--wechat-light-green);
+  --primary-dark: var(--wechat-dark-green);
+  --accent-color: #00AEEF;
+  --secondary-color: #07C160;
+}
+
 .ant-layout-content {
   margin: 0;
 }
 
 /* Chat item styles */
 .chat-item {
-  border-radius: var(--radius-md);
+  border-radius: 0;
   transition: all 0.2s ease;
+  padding: 10px;
+  border-bottom: 1px solid var(--wechat-border);
 }
 
 .chat-item:hover {
-  background-color: var(--bg-tertiary) !important;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background-color: #E8E8E8 !important;
+  transform: none;
+  box-shadow: none;
 }
 
 .avatar-user {
@@ -26,18 +57,18 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Navbar styling */
+/* Navbar styling - WeChat style */
 .app-navbar {
-  background: var(--primary-color);
+  background: #2E3238;
   color: white;
 }
 
 .app-navbar .ant-menu.ant-menu-dark {
-  background: var(--primary-color);
+  background: #2E3238;
 }
 
 .app-navbar .ant-menu-dark .ant-menu-item-selected {
-  background-color: var(--primary-dark);
+  background-color: #3A3F45;
 }
 
 /* Chat container styling */
@@ -45,65 +76,65 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--wechat-chat-bg);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
-/* Message bubbles */
+/* Message bubbles - WeChat style */
 .message-bubble-sent {
-  background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
-  color: white;
-  border-radius: 16px 16px 0 16px;
-  padding: 12px 16px;
+  background: var(--wechat-message-sent);
+  color: var(--wechat-text);
+  border-radius: 4px;
+  padding: 10px 14px;
   max-width: 80%;
   align-self: flex-end;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .message-bubble-received {
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-  border-radius: 16px 16px 16px 0;
-  padding: 12px 16px;
+  background-color: var(--wechat-message-received);
+  color: var(--wechat-text);
+  border-radius: 4px;
+  padding: 10px 14px;
   max-width: 80%;
   align-self: flex-start;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 /* Input box styling */
 .message-input {
-  border-radius: 24px;
-  padding: 12px 18px;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 10px 14px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--wechat-border);
   transition: all 0.3s ease;
 }
 
 .message-input:focus, 
 .message-input:hover {
-  border-color: var(--primary-light);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: var(--wechat-green);
+  box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2);
 }
 
 /* Send button styling */
 .send-button {
-  background: var(--primary-color);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
+  background: var(--wechat-green);
+  border-radius: 4px;
+  box-shadow: none;
   transition: all 0.3s ease;
 }
 
 .send-button:hover {
-  background: var(--primary-dark);
-  transform: scale(1.05);
+  background: var(--wechat-dark-green);
+  transform: none;
 }
 
-/* Recent chats container */
+/* Recent chats container - WeChat style */
 .recent-chats-container {
-  background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border-light);
+  background-color: #FBFBFB;
+  border-right: 1px solid var(--wechat-border);
 }
 
 /* Chat message timestamp */
@@ -112,12 +143,23 @@
   opacity: 0.7;
 }
 
-/* User avatar with animation */
+/* User avatar */
 .user-avatar {
   transition: all 0.3s ease;
 }
 
 .user-avatar:hover {
-  transform: scale(1.05);
+  transform: none;
   cursor: pointer;
+}
+
+/* WeChat pattern background */
+.bg-pattern {
+  background-color: var(--wechat-bg);
+}
+
+/* Glass effect - WeChat style */
+.glass-effect {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--wechat-border);
 }

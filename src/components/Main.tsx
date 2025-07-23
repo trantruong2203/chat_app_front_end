@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Avatar, Layout, Input, Button, Space, Typography, Card, Row, Col } from 'antd';
-import { UserOutlined, SendOutlined } from '@ant-design/icons';
-import { MdAttachment, MdInsertEmoticon } from 'react-icons/md';
+import { Avatar, Layout, Input, Button, Space } from 'antd';
+import { UserOutlined, SendOutlined, SmileOutlined, PaperClipOutlined } from '@ant-design/icons';
 import HeadMain from './HeadMain';
 
 const { Content } = Layout;
-const { Text, Paragraph } = Typography;
 
 const Main: React.FC = () => {
   const [message, setMessage] = useState<string>('');
@@ -25,127 +23,110 @@ const Main: React.FC = () => {
       
       <Space 
         direction="vertical" 
-        className="bg-pattern" 
         style={{ 
-          padding: 24, 
+          padding: '16px', 
           flex: 1, 
           overflowY: 'auto', 
-          width: '100%' 
+          width: '100%',
+          backgroundColor: '#EDEDED'
         }}
-        size={18}
+        size={16}
       >
         {/* Tin nhắn nhận từ người khác */}
-        <Row>
-          <Col flex="auto" style={{ maxWidth: '80%', display: 'flex', alignItems: 'flex-start' }}>
-            <Avatar 
-              className="user-avatar" 
-              size={40} 
-              icon={<UserOutlined />} 
-              style={{ backgroundColor: 'var(--primary-light)', marginRight: 12 }} 
-            />
-            <Card 
-              className="message-bubble-received fade-in" 
-              size="small" 
-              bordered={false} 
-              style={{ padding: '8px 12px' }}
-            >
-              <Paragraph style={{ fontSize: 15, margin: 0 }}>
-                Xin chào bạn, tôi có thể giúp gì cho bạn?
-              </Paragraph>
-              <Text type="secondary" className="message-timestamp" style={{ fontSize: 12, float: 'right' }}>
-                10:05
-              </Text>
-            </Card>
-          </Col>
-        </Row>
+        <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '8px' }}>
+          <Avatar 
+            size={36} 
+            icon={<UserOutlined />} 
+            style={{ backgroundColor: '#f0f0f0', marginRight: '10px' }} 
+          />
+          <div className="message-bubble-received">
+            <div style={{ padding: '0', margin: 0, fontSize: '14px' }}>
+              Xin chào bạn, tôi có thể giúp gì cho bạn?
+            </div>
+            <div style={{ fontSize: '11px', color: '#999', marginTop: '4px', textAlign: 'right' }}>
+              10:05
+            </div>
+          </div>
+        </div>
 
         {/* Tin nhắn gửi từ người dùng hiện tại */}
-        <Row justify="end">
-          <Col flex="auto" style={{ maxWidth: '80%', display: 'flex', justifyContent: 'flex-end' }}>
-            <Card 
-              className="message-bubble-sent fade-in" 
-              size="small" 
-              bordered={false} 
-              style={{ padding: '8px 12px' }}
-            >
-              <Paragraph style={{ fontSize: 15, margin: 0 }}>
-                Tôi cần hỗ trợ về ứng dụng chat này
-              </Paragraph>
-              <Text type="secondary" className="message-timestamp" style={{ fontSize: 12, float: 'right' }}>
-                10:07
-              </Text>
-            </Card>
-          </Col>
-        </Row>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+          <div className="message-bubble-sent">
+            <div style={{ padding: '0', margin: 0, fontSize: '14px' }}>
+              Tôi cần hỗ trợ về ứng dụng chat này
+            </div>
+            <div style={{ fontSize: '11px', color: '#7BC76A', marginTop: '4px', textAlign: 'right' }}>
+              10:07
+            </div>
+          </div>
+        </div>
 
         {/* Tin nhắn nhận khác */}
-        <Row>
-          <Col flex="auto" style={{ maxWidth: '80%', display: 'flex', alignItems: 'flex-start' }}>
-            <Avatar 
-              className="user-avatar" 
-              size={40} 
-              icon={<UserOutlined />} 
-              style={{ backgroundColor: 'var(--primary-light)', marginRight: 12 }} 
-            />
-            <Card 
-              className="message-bubble-received fade-in" 
-              size="small" 
-              bordered={false} 
-              style={{ padding: '8px 12px' }}
-            >
-              <Paragraph style={{ fontSize: 15, margin: 0 }}>
-                Vâng, tôi có thể giúp bạn. Bạn đang gặp khó khăn gì?
-              </Paragraph>
-              <Text type="secondary" className="message-timestamp" style={{ fontSize: 12, float: 'right' }}>
-                10:08
-              </Text>
-            </Card>
-          </Col>
-        </Row>
+        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+          <Avatar 
+            size={36} 
+            icon={<UserOutlined />} 
+            style={{ backgroundColor: '#f0f0f0', marginRight: '10px' }} 
+          />
+          <div className="message-bubble-received">
+            <div style={{ padding: '0', margin: 0, fontSize: '14px' }}>
+              Vâng, tôi có thể giúp bạn. Bạn đang gặp khó khăn gì?
+            </div>
+            <div style={{ fontSize: '11px', color: '#999', marginTop: '4px', textAlign: 'right' }}>
+              10:08
+            </div>
+          </div>
+        </div>
       </Space>
       
       {/* Vùng nhập tin nhắn */}
-      <Row 
-        align="middle" 
+      <div
         style={{ 
-          padding: '14px 24px', 
-          borderTop: '1px solid var(--border-light)',
-          backgroundColor: 'var(--bg-secondary)'
+          padding: '10px', 
+          backgroundColor: '#F5F5F5',
+          borderTop: '1px solid var(--wechat-border)',
+          display: 'flex',
+          alignItems: 'center'
         }}
       >
-        <Space size={10} style={{ marginRight: 10 }}>
+        <Space size={12} style={{ marginRight: '8px' }}>
           <Button
             type="text"
-            shape="circle"
-            icon={<MdAttachment style={{ fontSize: 20 }} />}
-            style={{ color: 'var(--primary-color)' }}
+            style={{ color: '#666', fontSize: '18px' }}
+            icon={<SmileOutlined />}
           />
           <Button
             type="text"
-            shape="circle"
-            icon={<MdInsertEmoticon style={{ fontSize: 20 }} />}
-            style={{ color: 'var(--primary-color)' }}
+            style={{ color: '#666', fontSize: '18px' }}
+            icon={<PaperClipOutlined />}
           />
         </Space>
         
         <Input
-          className="message-input"
           placeholder="Nhập tin nhắn..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onPressEnter={handleSendMessage}
-          style={{ flex: 1 }}
+          style={{ 
+            flex: 1,
+            border: '1px solid #E5E5E5',
+            borderRadius: '4px',
+            backgroundColor: '#FFFFFF' 
+          }}
         />
         <Button 
-          className="send-button"
           type="primary" 
-          shape="circle"
           icon={<SendOutlined />} 
           onClick={handleSendMessage}
-          size="large"
-          style={{ marginLeft: 12 }}
-        />
-      </Row>
+          style={{ 
+            marginLeft: '8px',
+            background: '#07C160',
+            borderColor: '#07C160' 
+          }}
+        >
+          Gửi
+        </Button>
+      </div>
     </Content>
   );
 };

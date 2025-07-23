@@ -1,15 +1,17 @@
 import './App.css'
 import ClientRouter from './routers/ClientRouter.js';
 import 'react-toastify/dist/ReactToastify.css';
-import Fetcher from './Fetcher';
 import ToastifyNotification from './services/ToastifyNotification';
+import { useContext } from 'react';
+import { ContextAuth } from './contexts/AuthContext';
+import AuthRouter from './routers/AuthRouter';
 
 function App() {
+  const { accountLogin } = useContext(ContextAuth);
   return (
     <>
-      <ClientRouter />
+      {accountLogin ? <ClientRouter /> : <AuthRouter />}
       <ToastifyNotification />
-      <Fetcher />
     </>
   )
 }

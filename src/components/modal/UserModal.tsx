@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Avatar, Button, Modal, Divider, Typography, Card, Descriptions, Row, Col, message, Badge, Input, Form, Select, DatePicker, Spin, Upload } from 'antd';
+import { Avatar, Button, Modal, Divider, Typography, Card, Descriptions, Row, Col, Input, Form, Select, DatePicker } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../stores/store';
 import { ContextAuth } from '../../contexts/AuthContext';
@@ -7,11 +7,11 @@ import {
   UserOutlined,
   LogoutOutlined,
   EditOutlined,
-  CameraOutlined,
   MailOutlined,
   PhoneOutlined,
   ManOutlined,
-  CalendarOutlined
+  CalendarOutlined,
+  CameraOutlined
 } from '@ant-design/icons';
 import '../../App.css';
 import { getObjectById } from '../../services/respone';
@@ -19,6 +19,7 @@ import type { UserResponse } from '../../interface/UserResponse';
 import { updateUserThunk } from '../../features/users/userThunks';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
+import UpdateAvatarModel from './UpdateAvatarModal';
 
 const { Title } = Typography;
 
@@ -31,13 +32,13 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
   const [handleInput, setHandleInput] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [openUpdateAvatar, setOpenUpdateAvatar] = useState(false);
   
   useEffect(() => {
     if (accountLogin) {
       setUser(getObjectById(items, accountLogin.email) || null);
     }
-  }, [items, accountLogin]);
+  }, [accountLogin, items]);
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -45,14 +46,12 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setHandleInput(false);
+
   };
 
-  const handleChangeCover = () => {
-    message.info('Tính năng thay đổi ảnh bìa sẽ sớm được cập nhật!');
-  };
-
-  const handleChangeAvatar = () => {
-    message.info('Tính năng thay đổi ảnh đại diện sẽ sớm được cập nhật!');
+  const handleOpenUpdateAvatar = () => {
+    setOpenUpdateAvatar(true);
   };
 
   const handleUpdateUser = async () => {
@@ -61,16 +60,12 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
       const updatePayload: Partial<UserResponse> = {};
 
       if (values.gender !== user?.gender) updatePayload.gender = values.gender;
-      
       if (values.birthday) {
-        const newBirthdayISO = dayjs(values.birthday).toISOString();
-        const oldBirthday = user?.birthday ? new Date(user.birthday) : null;
-        
-        if (!oldBirthday || newBirthdayISO !== oldBirthday.toISOString()) {
-          updatePayload.birthday = values.birthday.toISOString();
+        const newBirthday = values.birthday.format('YYYY-MM-DD');
+        if (newBirthday !== user?.birthday) {
+          updatePayload.birthday = newBirthday;
         }
       }
-
       if (values.username !== user?.username) updatePayload.username = values.username;
       if (values.phone !== user?.phone) updatePayload.phone = values.phone;
 
@@ -79,18 +74,21 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
         return;
       }
 
-      setIsLoading(true);
       await dispatch(updateUserThunk({ email: user?.email || '', account: updatePayload as UserResponse })).unwrap();
+      // Cập nhật state user với thông tin mới
+      if (user) {
+        setUser({
+          ...user,
+          ...updatePayload
+        });
+      }
       toast.success('Cập nhật thông tin thành công');
-      setIsLoading(false);
       setHandleInput(false);
     } catch (error) {
-      setIsLoading(false);
       toast.error('Cập nhật thông tin thất bại: ' + error);
       console.log(error);
     }
   };
-
 
   return (
     <Modal
@@ -100,16 +98,16 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
       onCancel={handleCancel}
       width={500}
       footer={null}
-
+    style={{ top: 20 }}
     >
       <Card >
-        <div style={{ position: 'relative', height: '150px', marginBottom: '50px' }}>
+        <div style={{ position: 'relative', height: '150px', marginBottom: '20px' }}>
           <div style={{
             width: '100%',
             height: '150px',
             overflow: 'hidden',
             borderRadius: '8px',
-            position: 'relative'
+            position: 'relative',
           }}>
             <img
               src="https://cdn.pixabay.com/photo/2023/12/06/21/07/photo-8434386_1280.jpg"
@@ -120,18 +118,6 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
                 objectFit: 'cover',
               }}
             />
-            <Button
-              type="primary"
-              shape="circle"
-              icon={<CameraOutlined />}
-              size="small"
-              style={{
-                position: 'absolute',
-                right: '10px',
-                bottom: '10px',
-              }}
-              onClick={handleChangeCover}
-            />
           </div>
 
           <div style={{
@@ -141,20 +127,11 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
             transform: 'translateX(-50%)',
             textAlign: 'center'
           }}>
-            <Badge count={
-              <Upload
-                action={`http://localhost:3000/user/upload-avatar`}
-                showUploadList={false}
-                headers={{
-                  Authorization: `Bearer ${localStorage.getItem('token')}`
-                }}
-                onChange={handleChangeAvatar}
-              >
-                <Button type="primary" shape="circle" icon={<CameraOutlined />} size="small" />
-              </Upload>
-            } offset={[0, 0]}>
+
+            <div style={{ position: 'relative' }}>
               <Avatar
                 size={80}
+                src={getObjectById(items, accountLogin?.email ?? '')?.avatar || ''}
                 icon={<UserOutlined />}
                 style={{
                   border: '4px solid white',
@@ -162,7 +139,22 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                 }}
               />
-            </Badge>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<CameraOutlined />}
+                size="small"
+                style={{
+                  position: 'absolute',
+                  right: '0px',
+                  bottom: '10px',
+                }}
+                onClick={handleOpenUpdateAvatar}
+              />
+
+
+            </div>
+
             <Title level={4} style={{ marginTop: '10px', marginBottom: 0 }}>
               {user?.username || 'Người dùng'}
             </Title>
@@ -171,24 +163,30 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
 
         <Divider style={{ marginTop: '30px' }} />
         {handleInput ? (
-          <Form form={form} style={{ marginBottom: '20px' }}>
+          <Form 
+            form={form} 
+            style={{ marginBottom: '20px' }}
+            labelCol={{ span: 7 }}
+            wrapperCol={{ span: 16 }}
+            layout="horizontal"
+          >
             <Form.Item label="Tên người dùng" name="username" initialValue={user?.username}>
-              <Input />
+              <Input style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item label="Email" name="email" initialValue={user?.email}>
-              <Input disabled />
+              <Input disabled style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item label="Số điện thoại" name="phone" initialValue={user?.phone}>
-              <Input />
+              <Input style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item label="Giới tính" name="gender" initialValue={user?.gender}>
-              <Select>
+              <Select style={{ width: '100%' }}>
                 <Select.Option value="Nam">Nam</Select.Option>
                 <Select.Option value="Nữ">Nữ</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="Ngày sinh" name="birthday" initialValue={user?.birthday ? dayjs(user.birthday) : null}>
-              <DatePicker format="YYYY/MM/DD"  />
+              <DatePicker format="YYYY/MM/DD" style={{ width: '100%' }} />
             </Form.Item>
 
           </Form>
@@ -205,7 +203,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
                 {user?.gender || 'Chưa cập nhật'}
               </Descriptions.Item>
               <Descriptions.Item label={<><CalendarOutlined /> Ngày sinh</>}>
-                {user?.birthday ? new Date(user.birthday).toLocaleDateString() : 'Chưa cập nhật'}
+                {user?.birthday ? (typeof user.birthday === 'string' ? new Date(user.birthday).toLocaleDateString() : user.birthday.toLocaleDateString()) : 'Chưa cập nhật'}
               </Descriptions.Item>
             </Descriptions>
           </div>
@@ -215,7 +213,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
             {handleInput ? (
               <div style={{ display: 'flex', gap: '10px' }}>
                 <Button type="primary" htmlType="submit" style={{ width: '100%', borderRadius: '4px' }} onClick={handleUpdateUser}>
-                  {isLoading ? <Spin /> : 'Lưu'}
+                  Lưu
                 </Button>
                 <Button type="default" htmlType="submit" style={{ width: '100%', borderRadius: '4px' }} onClick={() => setHandleInput(false)}>
                   Hủy
@@ -253,6 +251,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
           </Col>
         </Row>
       </Card>
+      <UpdateAvatarModel openUpdateAvatar={openUpdateAvatar} setOpenUpdateAvatar={setOpenUpdateAvatar} user={user} setUser={setUser}/>
     </Modal>
   );
 };

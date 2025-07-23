@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createUser, getUsers, loginUser, updateUserThunk } from './userThunks';
+import { createUser, getUsers, loginUser, updateUserThunk, updatePasswordThunk, updateAvatarThunk } from './userThunks';
 import type { LoginResponse, UserResponse } from '../../interface/UserResponse';
+
 
 interface UserState {
   items: UserResponse[];
@@ -11,6 +12,7 @@ interface UserState {
     phone: string;
     gender?: string;
     birthday?: Date;
+    avatar?: string;
   };
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -24,6 +26,7 @@ const innerValue = {
   phone: '',
   gender: '',
   birthday: undefined,
+  avatar: '',
 };
 
 const userSlice = createSlice({
@@ -83,7 +86,8 @@ const userSlice = createSlice({
           password: userData.password || '',
           phone: userData.phone || '',
           gender: userData.gender || '',
-          birthday: userData.birthday,
+          birthday: userData.birthday ? new Date(userData.birthday) : undefined,
+          avatar: userData.avatar || '',
         };
         state.error = null; 
       })
@@ -92,21 +96,45 @@ const userSlice = createSlice({
       })
 
       // UPDATE
+       .addCase(updateAvatarThunk.fulfilled, (state, action) => {
+        const index = state.items.findIndex(
+          (user) => user.email === action.payload.user.email
+        );
+        if (index !== -1) {
+          state.items[index] = action.payload.user;
+        }  
+        state.error = null;
+      })
+      .addCase(updateAvatarThunk.rejected, (state, action) => {
+        state.error = action.payload as string || null;
+      })
+
+      // UPDATE
       .addCase(updateUserThunk.fulfilled, (state, action) => {
-        const userData = action.payload as UserResponse;
-        state.user = {
-          ...userData,
-          phone: userData.phone || '',
-          birthday: userData.birthday ? new Date(userData.birthday) : undefined,
-          gender: userData.gender || ''
-        };
+            console.log('action.payload', action.payload);
+            
+        const index = state.items.findIndex(
+          (cat) => cat.email === action.payload.email
+        );
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
         state.error = null;
       })
       .addCase(updateUserThunk.rejected, (state, action) => {
         state.error = action.payload as string || null;
       })
 
-      
+      // UPDATE PASSWORD
+      .addCase(updatePasswordThunk.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updatePasswordThunk.rejected, (state, action) => {
+        state.error = action.payload as string || null;
+      })
+
+
   },
 });
 

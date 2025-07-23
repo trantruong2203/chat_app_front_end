@@ -8,12 +8,13 @@ import NotFriendModal from '../components/modal/NotFriendModal';
 import UserModal from '../components/modal/UserModal';
 import { useState } from 'react';
 import type { UserResponse } from '../interface/UserResponse';
-function Home() {
+function Messages() {
     const [isNotFriendModalOpen, setIsNotFriendModalOpen] = useState(false);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isAddFriendModalOpen, setIsAddFriendModalOpen] = useState(false);
     const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
     const [findUser, setFindUser] = useState<UserResponse>({
+        id: 0,
         email: '',
         avatar: '',
         password: '',
@@ -21,13 +22,14 @@ function Home() {
         username: '',
         phone: '',
         gender: '',
-        dob: new Date(),
+        birthday: new Date(),
         agreement: false,
     });
 
     const handleCancel = (): void => {
         setIsAddFriendModalOpen(false);
         setFindUser({
+            id: 0,
             email: '',
             avatar: '',
             password: '',
@@ -35,7 +37,7 @@ function Home() {
             username: '',
             phone: '',
             gender: '',
-            dob: new Date(),
+            birthday: new Date(),
             agreement: false,
         });
     }
@@ -57,13 +59,14 @@ function Home() {
     return (
         <>
             <Layout style={{ height: '100vh', overflow: 'hidden' }}>
-                <Layout style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+                <Layout style={{ display: 'flex', flexDirection: 'row', height: '100%', backgroundColor: '#fff' }}>
                     <Navbar setIsUserModalOpen={setIsUserModalOpen} />
                     <RecentChats 
                         setIsAddFriendModalOpen={setIsAddFriendModalOpen} 
                         setIsAddGroupModalOpen={setIsAddGroupModalOpen}
                     />
                     <Main />
+                    
                 </Layout>
             </Layout>
             <AddFriendModal
@@ -93,4 +96,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Messages;

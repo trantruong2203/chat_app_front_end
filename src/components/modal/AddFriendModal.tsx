@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState, type JSX } from 'react';
 import { Modal, Input, List, Avatar, Button, Typography, Divider, Space, Empty } from 'antd';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../stores/store';
-import type { UserResponse } from '../../interface/UserResponse';
+import { useDispatch, useSelector } from 'react-redux';
+import { type AppDispatch, type RootState } from '../../stores/store';
+import type { UserResponse, FriendShip } from '../../interface/UserResponse';
+import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
+import { createdFriendShip } from '../../features/friendship/friendshipThunks';
+import { ContextAuth } from '../../contexts/AuthContext';
+import { getObjectById } from '../../services/respone';
+import { toast } from 'react-toastify';
 
 
-
-const { Search } = Input;
 const { Text } = Typography;
 
 const AddFriendModal: React.FC<{
@@ -18,6 +21,34 @@ const AddFriendModal: React.FC<{
 }> = ({ isModalOpen, handleCancel, handleOpenNotFriendModal, findUser, setFindUser }) => {
   const [searchValue, setSearchValue] = useState('');
   const { items } = useSelector((state: RootState) => state.user);
+  const friendShip = useSelector((state: RootState) => state.friendship.items);
+  const dispatch = useDispatch<AppDispatch>();
+  const { accountLogin } = useContext(ContextAuth);
+
+  const getFrienShip = (): JSX.Element | string => {
+    const findFriendShip = friendShip.find(item => item.userid == getObjectById(items, accountLogin?.email ?? '')?.id && item.sentat == findUser.id);
+    console.log(findFriendShip);
+    
+    if (!findFriendShip) {
+      return (
+    <Button
+      type="primary"
+      size="small"
+      onClick={handleAddFriend}
+      style={{ backgroundColor: '#07C160', borderColor: '#07C160', color: 'white' }}
+    >
+      Kết bạn
+    </Button>
+  );
+    }
+    if (findFriendShip && findFriendShip.status === 0) {
+      return "Đã là bạn bè";
+    }
+    if (findFriendShip && findFriendShip.status === 1) {
+      return "Đã gửi lời mời kết bạn";
+    }
+    return '';
+  };
 
 
   const handleSearch = (): void => {
@@ -27,26 +58,71 @@ const AddFriendModal: React.FC<{
     }
   };
 
+  const handleAddFriend = (): void => {
+    const sender = getObjectById(items, accountLogin?.email ?? '');
+
+    if (!sender || !findUser?.id) {
+      console.error('Invalid sender or receiver info');
+      return;
+    }
+
+    const friendship: FriendShip = {
+      userid: sender.id,
+      sentat: findUser.id,
+      status: 1,
+    };
+
+    dispatch(createdFriendShip(friendship));
+    toast.success('Đã gửi lời mời kết bạn');
+
+  };
+
+
   return (
     <Modal
-      title="Thêm bạn"
+      title={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <UserAddOutlined style={{ color: '#07C160', marginRight: '10px' }} />
+          <span>Thêm bạn</span>
+        </div>
+      }
       open={isModalOpen}
       onCancel={handleCancel}
+      width={400}
       footer={[
-        <Button key="cancel" onClick={handleCancel}>Hủy</Button>,
-
+        <Button key="cancel" onClick={handleCancel} style={{ borderRadius: '4px' }}>Hủy</Button>,
       ]}
     >
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Search
-          addonBefore={<span role="img" aria-label="vn">Email - Sdt</span>}
-          placeholder="Nhập email hoặc số điện thoại"
-          value={searchValue}
-          onChange={e => setSearchValue(e.target.value)}
-          onSearch={handleSearch}
-          enterButton
-        />
-        <Divider orientation="left">Kết quả tìm kiếm</Divider>
+        <div style={{ marginBottom: '16px' }}>
+          <Input
+            prefix={<SearchOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />}
+            placeholder="Nhập email hoặc số điện thoại"
+            value={searchValue}
+            onChange={e => setSearchValue(e.target.value)}
+            style={{
+              width: '100%',
+              borderRadius: '4px',
+              marginBottom: '8px'
+            }}
+          />
+          <Button
+            type="primary"
+            onClick={handleSearch}
+            style={{
+              width: '100%',
+              backgroundColor: '#07C160',
+              borderColor: '#07C160',
+              borderRadius: '4px'
+            }}
+          >
+            Tìm kiếm
+          </Button>
+        </div>
+        <Divider style={{ margin: '16px 0' }} />
+        <div style={{ marginBottom: '8px' }}>
+          <Text strong style={{ fontSize: '14px' }}>Kết quả tìm kiếm</Text>
+        </div>
         {
           findUser.email ? (
             <List
@@ -54,13 +130,17 @@ const AddFriendModal: React.FC<{
               dataSource={[findUser]}
               renderItem={item => (
                 <List.Item
-                  onClick={() => handleOpenNotFriendModal(item)}
-                  actions={[<Button type="primary" size="small" >Kết bạn</Button>]}
+                  actions={[
+                    <>
+                    {getFrienShip()}
+                    </>
+                  ]}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src={item.avatar} style={{ width: 50, height: 50 }} />}
-                    title={<Text strong>{item.username}</Text>}
-                    description={<Text type="secondary">{item.phone}</Text>}
+
+                    avatar={<Avatar src={item.avatar} style={{ width: 40, height: 40 }} />}
+                    title={<Text strong onClick={() => handleOpenNotFriendModal(item)} style={{ cursor: 'pointer' }}>{item.username}</Text>}
+                    description={<Text type="secondary" style={{ fontSize: '13px' }}>{item.phone}</Text>}
                   />
                 </List.Item>
               )}
@@ -72,9 +152,7 @@ const AddFriendModal: React.FC<{
             />
           )
         }
-
       </Space>
-
     </Modal>
   );
 };

@@ -1,7 +1,6 @@
 import { Avatar, Input, type GetProps, Badge } from 'antd';
 import React from 'react';
-import { MdGroupAdd, MdPersonAdd } from 'react-icons/md';
-import { UserOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserAddOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 type SearchProps = GetProps<typeof Input.Search>;
 
@@ -17,12 +16,12 @@ interface RecentChatsProps {
 function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: RecentChatsProps): React.ReactElement {
 
     return (
-        <div className="recent-chats-container bg-pattern" style={{ 
-            padding: '16px', 
+        <div className="recent-chats-container" style={{ 
+            padding: '0', 
             display: 'flex', 
             flexDirection: 'column', 
             height: '100%',
-            width: '320px',
+            width: '250px',
         }}>
             <div style={{ 
                 display: 'flex', 
@@ -30,91 +29,73 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: Recent
                 justifyContent: 'space-between', 
                 gap: '10px', 
                 alignItems: 'center', 
-                marginBottom: '20px' 
+                padding: '15px',
+                borderBottom: '1px solid var(--wechat-border)'
             }}>
                 <Search 
                     placeholder="Tìm kiếm" 
                     allowClear 
                     onSearch={onSearch} 
+                    prefix={<SearchOutlined style={{ color: '#bbb' }} />}
                     style={{ 
                         width: '100%',
-                        borderRadius: 'var(--radius-md)'
                     }} 
                 />
                 <div style={{ 
                     display: 'flex', 
                     flexDirection: 'row', 
-                    gap: '15px' 
+                    gap: '12px' 
                 }}>
-                    <div className="glass-effect" style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        cursor: 'pointer'
+                    <div className="icon-btn" style={{
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        color: '#666'
                     }}>
-                        <MdPersonAdd size={20} color='var(--primary-color)' onClick={() => setIsAddFriendModalOpen(true)} />
+                        <UserAddOutlined onClick={() => setIsAddFriendModalOpen(true)} />
                     </div>
-                    <div className="glass-effect" style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        cursor: 'pointer'
+                    <div className="icon-btn" style={{
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        color: '#666'
                     }}>
-                        <MdGroupAdd size={20} color='var(--primary-color)' onClick={() => setIsAddGroupModalOpen(true)} />
+                        <UsergroupAddOutlined onClick={() => setIsAddGroupModalOpen(true)} />
                     </div>
                 </div>
             </div>
-
-            <h3 style={{ 
-                marginBottom: '16px', 
-                borderBottom: '1px solid var(--border-light)', 
-                paddingBottom: '12px',
-                fontWeight: '600',
-                color: 'var(--text-primary)'
-            }}>Trò chuyện gần đây</h3>
             
             <div style={{ 
                 display: 'flex', 
-                flexDirection: 'column', 
-                gap: '12px', 
+                flexDirection: 'column',
                 overflow: 'auto',
-                paddingRight: '6px'
+                height: '100%'
             }}>
                 {/* Cuộc trò chuyện 1 */}
                 <div style={{ 
                     display: 'flex', 
-                    padding: '12px', 
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--bg-primary)', 
+                    padding: '10px 15px', 
+                    backgroundColor: '#FFFFFF', 
                     cursor: 'pointer',
-                    boxShadow: 'var(--shadow-sm)',
+                    borderBottom: '1px solid var(--wechat-border)'
                 }}
-                className="chat-item fade-in"
+                className="chat-item"
                 >
                     <Badge dot status="success" offset={[-4, 38]}>
                         <Avatar 
-                            className="user-avatar" 
-                            size={46} 
-                            icon={<UserOutlined />} 
+                            size={40} 
+                            icon={<SearchOutlined />} 
                             style={{ 
-                                backgroundColor: 'var(--primary-light)' 
+                                backgroundColor: '#f0f0f0' 
                             }} 
                         />
                     </Badge>
-                    <div style={{ marginLeft: '14px', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Nguyễn Văn A</span>
-                            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>12:00</span>
+                            <span style={{ fontWeight: 'bold', color: '#000' }}>Nguyễn Văn A</span>
+                            <span style={{ fontSize: '12px', color: '#9E9E9E' }}>12:00</span>
                         </div>
                         <div style={{ 
                             fontSize: '13px', 
-                            color: 'var(--text-secondary)', 
+                            color: '#666', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 
                             textOverflow: 'ellipsis',
@@ -128,31 +109,29 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: Recent
                 {/* Cuộc trò chuyện 2 */}
                 <div style={{ 
                     display: 'flex', 
-                    padding: '12px', 
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--bg-primary)', 
+                    padding: '10px 15px', 
+                    backgroundColor: '#FFFFFF', 
                     cursor: 'pointer',
-                    boxShadow: 'var(--shadow-sm)'
+                    borderBottom: '1px solid var(--wechat-border)'
                 }}
-                className="chat-item fade-in"
+                className="chat-item"
                 >
                     <Avatar 
-                        className="user-avatar"
-                        size={46} 
+                        size={40} 
                         style={{ 
-                            backgroundColor: 'var(--accent-color)'
+                            backgroundColor: '#f0f0f0' 
                         }}
                     >
                         T
                     </Avatar>
-                    <div style={{ marginLeft: '14px', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Trần Thị B</span>
-                            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Hôm qua</span>
+                            <span style={{ fontWeight: 'bold', color: '#000' }}>Trần Thị B</span>
+                            <span style={{ fontSize: '12px', color: '#9E9E9E' }}>Hôm qua</span>
                         </div>
                         <div style={{ 
                             fontSize: '13px', 
-                            color: 'var(--text-secondary)', 
+                            color: '#666', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 
                             textOverflow: 'ellipsis',
@@ -166,33 +145,31 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: Recent
                 {/* Cuộc trò chuyện nhóm */}
                 <div style={{ 
                     display: 'flex', 
-                    padding: '12px', 
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--bg-primary)', 
+                    padding: '10px 15px', 
+                    backgroundColor: '#FFFFFF', 
                     cursor: 'pointer',
-                    boxShadow: 'var(--shadow-sm)'
+                    borderBottom: '1px solid var(--wechat-border)'
                 }}
-                className="chat-item fade-in"
+                className="chat-item"
                 >
                     <Badge count={3} size="small" offset={[-2, 38]}>
                         <Avatar 
-                            className="user-avatar"
-                            size={46} 
+                            size={40} 
                             style={{ 
-                                backgroundColor: 'var(--secondary-color)'
+                                backgroundColor: '#f0f0f0'
                             }}
                         >
                             N
                         </Avatar>
                     </Badge>
-                    <div style={{ marginLeft: '14px', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Nhóm dự án</span>
-                            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>09:45</span>
+                            <span style={{ fontWeight: 'bold', color: '#000' }}>Nhóm dự án</span>
+                            <span style={{ fontSize: '12px', color: '#9E9E9E' }}>09:45</span>
                         </div>
                         <div style={{ 
                             fontSize: '13px', 
-                            color: 'var(--text-secondary)', 
+                            color: '#666', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 
                             textOverflow: 'ellipsis',

@@ -4,10 +4,10 @@ import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row } from 'a
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../stores/store.ts';
 import { loginUser } from '../features/users/userThunks.ts';
-import { ContextAuth } from '../contexts/AuthContext.tsx';
 import { Link, useNavigate } from 'react-router-dom';
 import type { LoginRequest } from '../interface/UserResponse.ts';
 import { toast } from 'react-toastify';
+import { ContextAuth } from '../contexts/AuthContext.tsx';
 
 const { Title, Text } = Typography;
 
@@ -15,16 +15,18 @@ const Login: React.FC = () => {
   const [form] = Form.useForm<LoginRequest>();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { getToken } = useContext(ContextAuth);
 
   const onFinish = async (values: LoginRequest): Promise<void> => {
     try {
-      const user = await dispatch(loginUser(values)).unwrap();
+      const user = await dispatch(loginUser(values));
       if (!user) {
         toast.error("Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!");
         return;
       }
-      navigate('/home');
+      await getToken();
       toast.success("Đăng nhập thành công!");
+      navigate('/');
     } catch (error: unknown) {
       console.error('Lỗi đăng nhập:', error);
       toast.error("Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!");
@@ -118,7 +120,7 @@ const Login: React.FC = () => {
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>Ghi nhớ đăng nhập</Checkbox>
               </Form.Item>
-              <a href="#" style={{ fontSize: '14px', color: 'var(--primary-color)' }}>Quên mật khẩu?</a>
+              <a href="/forget-password" style={{ fontSize: '14px', color: 'var(--primary-color)' }}>Quên mật khẩu?</a>
             </Row>
           </Form.Item>
 

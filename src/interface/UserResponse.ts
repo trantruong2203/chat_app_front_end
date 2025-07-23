@@ -1,4 +1,5 @@
 export  interface UserResponse {
+  id: number;
   email: string;
   avatar: string;
   password: string;
@@ -13,7 +14,7 @@ export interface LoginResponse {
   username: string;
   avatar: string;
   gender: string;
-  birthday: Date;
+  birthday: Date | string;
   phone: string;
   agreement: boolean;
   email: string;
@@ -24,4 +25,12 @@ export interface LoginResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+};
+
+export interface FriendShip {
+
+  id: number;
+  userid: number;
+  sentat: number;
+  status: number;
 };

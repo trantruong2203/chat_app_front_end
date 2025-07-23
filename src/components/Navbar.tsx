@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
-import { FileOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
+import React, { useContext, useEffect, useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Avatar, Layout, Menu } from 'antd';
-import { MdContacts, MdGroups, MdMessage } from 'react-icons/md';
+import { 
+  MessageOutlined, 
+  UserOutlined,
+  SettingOutlined,
+  AppstoreOutlined
+} from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../stores/store';
+import { ContextAuth } from '../contexts/AuthContext';
+import { getObjectById } from '../services/respone';
+import type { UserResponse } from '../interface/UserResponse';
+import { useNavigate } from 'react-router-dom';
 
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -23,57 +33,63 @@ function getItem(
   } as MenuItem;
 }
 
-const items: MenuItem[] = [
-  getItem('Tin nhắn', '1', <MdMessage />),
-  getItem('Danh bạ', '2', <MdContacts />),
-  getItem('Nhóm chat', 'sub1', <MdGroups />, [
-    getItem('Nhóm 1', '3'),
-    getItem('Nhóm 2', '4'),
-    getItem('Nhóm 3', '5'),
-  ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Files', '9', <FileOutlined />),
+const itemsMenu: MenuItem[] = [
+  getItem('1', '1', <MessageOutlined />),
+  getItem('2', '2', <UserOutlined />),
+  getItem('3', '3', <AppstoreOutlined />),
+  getItem('4', '4', <SettingOutlined />),
 ];
 
-  const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void }> = ({ setIsUserModalOpen }) => {
-  const [collapsed, setCollapsed] = useState(false);
+const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void }> = ({ setIsUserModalOpen }) => {
+  const {accountLogin} = useContext(ContextAuth);
+  const [userData, setUserData] = useState<UserResponse | null>(null);
+  const { items } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (accountLogin) {
+      setUserData(getObjectById(items, accountLogin.email) || null);
+    }
+  }, [accountLogin, items, dispatch]);
 
+  const onMenuClick: MenuProps['onClick'] = (e) => {
+    if (e.key === '2') {
+      navigate('/contacts');
+    } else if (e.key === '1') {
+      navigate('/');
+    }
+  };
 
   return (
     <Sider
       className="app-navbar"
-      collapsible
-      collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}
+      width={70}
       style={{ 
-        borderRight: '1px solid var(--border-light)',
-        boxShadow: 'var(--shadow-sm)',
+        borderRight: '1px solid var(--wechat-border)',
         zIndex: 1000
       }}
     >
       <div 
-        className="gradient-bg" 
         style={{ 
           padding: '20px 0', 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center',
-          marginBottom: '10px'
+          marginBottom: '20px'
         }}
       >
         <Avatar
           className="user-avatar"
           style={{
-            backgroundColor: 'white',
-            color: 'var(--primary-color)',
+            backgroundColor: '#f5f5f5',
+            color: '#666',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             width: '40px',
             height: '40px',
-            boxShadow: 'var(--shadow-md)'
           }}  
-          icon={<UserOutlined />}
+          src={userData?.avatar}
           onClick={() => setIsUserModalOpen(true)}
         />
       </div>
@@ -82,8 +98,12 @@ const items: MenuItem[] = [
         theme="dark"
         defaultSelectedKeys={['1']}
         mode="inline"
-        items={items}
-        style={{ borderRight: 0 }}
+        items={itemsMenu}
+        onClick={onMenuClick}
+        style={{ 
+          borderRight: 0,
+          textAlign: 'center'
+        }}
       />
       
     </Sider >
