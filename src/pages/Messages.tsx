@@ -79,6 +79,7 @@ function Messages() {
         try {
             await dispatch(createdMessage(
                 {
+                    id: 0,
                     senderid: selectedMessage.senderid == currentUserId ? selectedMessage.senderid : selectedMessage.receiverid,
                     receiverid: selectedMessage.senderid == currentUserId ? selectedMessage.receiverid : selectedMessage.senderid,
                     content: messageContent,

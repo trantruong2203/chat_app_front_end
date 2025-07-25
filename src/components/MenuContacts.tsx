@@ -1,5 +1,5 @@
 import { Input, type GetProps } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import { SearchOutlined, UserAddOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { AiOutlineTeam, AiOutlineUser, AiOutlineUserAdd, AiOutlineUsergroupAdd } from 'react-icons/ai';
 import { useNavigate, useLocation } from 'react-router-dom';

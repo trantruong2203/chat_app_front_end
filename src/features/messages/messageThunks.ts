@@ -51,7 +51,7 @@ export const getMessages = createAsyncThunk<Message[], void, { rejectValue: stri
     async (message, { rejectWithValue, dispatch }) => {
       try {
         const response = await createMessage(message);
-        if (response.success) {
+        if (response.data) {
           // Cập nhật danh sách tin nhắn sau khi gửi thành công
           dispatch(getMessages());
           return message;

@@ -54,6 +54,7 @@ const AddFriendRequest: React.FC = () => {
     
             await dispatch(createdMessage(
                 {
+                    id: 0,
                     senderid: friendShip?.userid ?? 0,
                     receiverid:  friendShip?.sentat ?? 0,
                     content: `Bạn và ${getObjectByEmail(items, friendShip?.userid)?.username} đã trở thành bạn bè`,

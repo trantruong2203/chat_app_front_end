@@ -38,6 +38,7 @@ export interface FriendShip {
 };
 
 export interface Message {
+  id: number;
   senderid: number;
   receiverid: number;
   content: string;

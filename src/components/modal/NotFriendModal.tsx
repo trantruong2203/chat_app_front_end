@@ -76,7 +76,7 @@ const NotFriendModal = ({ isModalOpen, handleCancel, findUser }: { isModalOpen: 
           </div>
           <div style={{ margin: "10px 0", display: "flex", alignItems: "center", gap: 10 }}>
             <Text strong >Ngày sinh:</Text>
-            <Text>{findUser.birthday ? (typeof findUser.birthday === 'string' ? new Date(findUser.birthday).toLocaleDateString() : findUser.birthday.toLocaleDateString()) : 'Chưa cập nhật'}</Text>
+            <Text>{findUser.birthday ? (typeof findUser.birthday === 'string' ? new Date(findUser.birthday).toLocaleDateString() : new Date(findUser.birthday).toLocaleDateString()) : 'Chưa cập nhật'}</Text>
           </div>
           <div style={{ margin: "10px 0", display: "flex", alignItems: "center", gap: 10 }}>
             <Text strong >Số điện thoại:</Text>

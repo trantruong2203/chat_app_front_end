@@ -203,7 +203,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
                 {user?.gender || 'Chưa cập nhật'}
               </Descriptions.Item>
               <Descriptions.Item label={<><CalendarOutlined /> Ngày sinh</>}>
-                {user?.birthday ? (typeof user.birthday === 'string' ? new Date(user.birthday).toLocaleDateString() : user.birthday.toLocaleDateString()) : 'Chưa cập nhật'}
+                {user?.birthday ? (typeof user.birthday === 'string' ? new Date(user.birthday).toLocaleDateString() : new Date(user.birthday).toLocaleDateString()) : 'Chưa cập nhật'}
               </Descriptions.Item>
             </Descriptions>
           </div>
