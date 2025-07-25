@@ -30,7 +30,7 @@ const router: CustomRoute[] = [
   },
   {
     path: '/reset-password',
-    element: <ResetPassword />,
+    element: <ResetPassword email={''} />,
   },
 ];
 
