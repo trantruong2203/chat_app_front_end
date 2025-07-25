@@ -7,19 +7,21 @@ export  interface UserResponse {
   username: string;
   phone: string;
   gender: string;
-  birthday: Date;
+  birthday: string;
   agreement: boolean;
+  status: number;
 };
 export interface LoginResponse {
   username: string;
   avatar: string;
   gender: string;
-  birthday: Date | string;
+  birthday: string;
   phone: string;
   agreement: boolean;
   email: string;
   password: string;
   confirm: string;
+  status: number;
 };
 
 export interface LoginRequest {
@@ -34,3 +36,12 @@ export interface FriendShip {
   sentat: number;
   status: number;
 };
+
+export interface Message {
+  senderid: number;
+  receiverid: number;
+  content: string;
+  sentat: string;
+  status: number;
+
+}

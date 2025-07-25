@@ -70,7 +70,7 @@ export const updateUserThunk = createAsyncThunk<UserResponse, {email: string, ac
   'user/update',
   async ({email, account}, { rejectWithValue }) => {
     try {
-      return await updateUser(account.username, account.birthday, account.phone, account.gender, email);
+      return await updateUser(account.username, account.birthday, account.phone, account.gender, email, account.status);
     } catch (err: unknown) {
       if (err instanceof AxiosError && err.response?.data) {
         return rejectWithValue(err.response.data.message || 'Lỗi từ server');

@@ -26,9 +26,15 @@ const AddFriendModal: React.FC<{
   const { accountLogin } = useContext(ContextAuth);
 
   const getFrienShip = (): JSX.Element | string => {
-    const findFriendShip = friendShip.find(item => item.userid == getObjectById(items, accountLogin?.email ?? '')?.id && item.sentat == findUser.id);
-    console.log(findFriendShip);
+    const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
     
+    const findFriendShip = friendShip.find(item => 
+      // Kiểm tra nếu người dùng hiện tại đã gửi lời mời kết bạn cho người được tìm kiếm
+      (item.userid === currentUserId && item.sentat === findUser.id) || 
+      // Hoặc người được tìm kiếm đã gửi lời mời kết bạn cho người dùng hiện tại
+      (item.userid === findUser.id && item.sentat === currentUserId)
+    );
+
     if (!findFriendShip) {
       return (
     <Button
@@ -67,6 +73,7 @@ const AddFriendModal: React.FC<{
     }
 
     const friendship: FriendShip = {
+      id: 0,
       userid: sender.id,
       sentat: findUser.id,
       status: 1,

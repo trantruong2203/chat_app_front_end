@@ -4,6 +4,7 @@ import type { AppDispatch } from './stores/store';
 import { getUsers } from './features/users/userThunks';
 import { ContextAuth } from './contexts/AuthContext';
 import { getFriendShips } from './features/friendship/friendshipThunks';
+import { getMessages } from './features/messages/messageThunks';
 
 
 function Fetcher() {
@@ -12,6 +13,7 @@ function Fetcher() {
     useEffect(() => {
         dispatch(getUsers());
         dispatch(getFriendShips());        
+        dispatch(getMessages());
     }, [dispatch, accountLogin?.email]);
     return null;
 }

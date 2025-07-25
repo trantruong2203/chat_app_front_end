@@ -20,7 +20,9 @@ const ListContacts: React.FC = () => {
     const getFriendShip = () => {
       const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
       if (!currentUserId) return [];
-      return friendShip.filter(item => item.sentat == currentUserId || item.userid == currentUserId && item.status == 0);
+      return friendShip.filter(item => 
+        (item.sentat == currentUserId || item.userid == currentUserId) && item.status == 0
+      );
     };
     const friendShipData = getFriendShip();
     setContacts(friendShipData);
@@ -33,10 +35,26 @@ const ListContacts: React.FC = () => {
         setContacts([]);
         return;
       }
-      const originalContacts = friendShip.filter(item => item.sentat == currentUserId && item.status == 0);
+      const originalContacts = friendShip.filter(item => 
+        (item.sentat == currentUserId || item.userid == currentUserId) && item.status == 0
+      );
       setContacts(originalContacts);
     } else {
-      setContacts(contacts.filter(item => getObjectByEmail(items, item.userid)?.username?.toLowerCase().includes(value.toLowerCase())));
+      // Tìm kiếm trên toàn bộ danh sách bạn bè thay vì chỉ danh sách hiện tại
+      const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
+      if (!currentUserId) {
+        setContacts([]);
+        return;
+      }
+      const allFriends = friendShip.filter(item => 
+        (item.sentat == currentUserId || item.userid == currentUserId) && item.status == 0
+      );
+      setContacts(allFriends.filter(item => {
+        const friendInfo = item.sentat == currentUserId 
+          ? getObjectByEmail(items, item.userid) 
+          : getObjectByEmail(items, item.sentat);
+        return friendInfo?.username?.toLowerCase().includes(value.toLowerCase());
+      }));
     }
   };
   return (
@@ -72,7 +90,12 @@ const ListContacts: React.FC = () => {
 
         <List
           dataSource={contacts}
-          renderItem={item => (
+          renderItem={item => {
+            const friendInfo = item.sentat == getObjectById(items, accountLogin?.email ?? '')?.id
+              ? getObjectByEmail(items, item.userid)
+              : getObjectByEmail(items, item.sentat);
+            
+            return (
             <List.Item
               style={{
                 padding: '12px 5px',
@@ -92,27 +115,20 @@ const ListContacts: React.FC = () => {
                 avatar={
                   <Badge
                     dot
-                    color={item.status === 0 ? 'green' : 'gray'}
+                    color={item.status === 1 ? 'green' : 'gray'}
                     offset={[-5, 40]}
                   >
                     <Avatar
-                      src={getObjectByEmail(items, item.userid)?.avatar ?? ''}
+                      src={friendInfo?.avatar ?? ''}
                       size={50}
                       style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
                     />
                   </Badge>
                 }
-                title={<Text strong>{getObjectByEmail(items, item.userid)?.username ?? '---'}</Text>}
-                description={
-                  <div>
-                    <Text type="secondary">{getObjectByEmail(items, item.userid)?.phone ?? '---'}</Text>
-                    <br />
-                    <Text type="secondary">{getObjectByEmail(items, item.userid)?.email ?? '---'}</Text>
-                  </div>
-                }
+                title={<Text strong style={{fontSize: '18px'}}>{friendInfo?.username ?? '---'}</Text>}
               />
             </List.Item>
-          )}
+          )}}
         />
       </div>
     </div>

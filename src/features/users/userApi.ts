@@ -31,12 +31,13 @@ export const register = async (account: UserResponse): Promise<UserResponse> => 
   return res.data;
 };
 
-export const updateUser = async (username: string, birthday: Date, phone: string, gender: string, email: string): Promise<UserResponse> => {
+export const updateUser = async (username: string, birthday: string, phone: string, gender: string, email: string, status: number): Promise<UserResponse> => {
     const res = await axios.patch<UserResponse>(`${API}/user/update/${email}`, {
         username,
         birthday,
         phone,
-        gender
+        gender,
+        status
     }, {
         withCredentials: true
     });

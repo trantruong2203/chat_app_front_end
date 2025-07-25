@@ -3,11 +3,12 @@ import { LockOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row } from 'antd';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../stores/store.ts';
-import { loginUser } from '../features/users/userThunks.ts';
+import { loginUser, updateUserThunk } from '../features/users/userThunks.ts';
 import { Link, useNavigate } from 'react-router-dom';
-import type { LoginRequest } from '../interface/UserResponse.ts';
+import type { LoginRequest, UserResponse } from '../interface/UserResponse.ts';
 import { toast } from 'react-toastify';
 import { ContextAuth } from '../contexts/AuthContext.tsx';
+import { setUser } from '../features/users/userSlice.ts';
 
 const { Title, Text } = Typography;
 
@@ -20,11 +21,23 @@ const Login: React.FC = () => {
   const onFinish = async (values: LoginRequest): Promise<void> => {
     try {
       const user = await dispatch(loginUser(values));
+      console.log(user);
       if (!user) {
         toast.error("Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!");
         return;
       }
       await getToken();
+      await dispatch(updateUserThunk({ email: user?.meta.arg.email || '', account: {
+        ...user,
+        status: 1
+      } as unknown as UserResponse })).unwrap();
+      // Cập nhật state user với thông tin mới
+      if (user) {
+        setUser({
+          ...user,
+          status: 1
+        });
+      }
       toast.success("Đăng nhập thành công!");
       navigate('/');
     } catch (error: unknown) {

@@ -1,58 +1,45 @@
-import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
-import { PhoneOutlined, VideoCameraOutlined, EllipsisOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Avatar, Typography } from 'antd';
+import { EllipsisOutlined, UserOutlined } from '@ant-design/icons';
+import type { UserResponse } from '../interface/UserResponse';
 
-function HeadMain() {
-    return (
-        <div
-        style={{
-          padding: '10px 16px',
-          backgroundColor: '#F5F5F5',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '10px',
-          borderBottom: '1px solid var(--wechat-border)'
-        }}
-      >
-        <div style={{display: "flex", gap: "10px", alignItems: "center"}}>
-          <Avatar 
-            size={36} 
-            icon={<UserOutlined />} 
-            style={{ backgroundColor: '#f0f0f0' }} 
-          />
-          <div>
-            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '500' }}>Tran van A</h3>
-            <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>Trực tuyến</p>
-          </div>
-        </div>
+const { Title } = Typography;
 
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
-          <div style={{
-            cursor: 'pointer',
-            fontSize: '18px',
-            color: '#666'
-          }}>
-            <PhoneOutlined />
-          </div>
-          <div style={{
-            cursor: 'pointer',
-            fontSize: '18px',
-            color: '#666'
-          }}>
-            <VideoCameraOutlined />
-          </div>
-          <div style={{
-            cursor: 'pointer',
-            fontSize: '18px',
-            color: '#666'
-          }}>
-            <EllipsisOutlined />
+interface HeadMainProps {
+  chatPartner?: UserResponse | null;
+}
+
+const HeadMain: React.FC<HeadMainProps> = ({ chatPartner }) => {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '10px 16px',
+      borderBottom: '1px solid var(--wechat-border)',
+      backgroundColor: '#F5F5F5'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Avatar 
+          size={36} 
+          icon={<UserOutlined />} 
+          src={chatPartner?.avatar}
+          style={{ marginRight: '8px' }}
+        />
+        <div>
+          <Title level={5} style={{ margin: 0 }}>
+            {chatPartner ? chatPartner.username : 'Chọn một cuộc trò chuyện'}
+          </Title>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            {chatPartner?.email || ''}
           </div>
         </div>
       </div>
-    );
-}
+      <div>
+        <EllipsisOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
+      </div>
+    </div>
+  );
+};
 
 export default HeadMain;

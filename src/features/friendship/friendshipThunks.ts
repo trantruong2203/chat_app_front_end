@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
-import { createFriendShip , deleteFriendShip, fetchAllFriendShips, fetchFriendShipById, updateFriendShip } from "./friendshipAPI";
+import { createFriendShip, deleteFriendShip, fetchAllFriendShips, fetchFriendShipById, updateFriendShip } from "./friendshipAPI";
+import type { ApiResponse } from "./friendshipAPI";
 import type { FriendShip } from "../../interface/UserResponse";
 
 export const getFriendShips = createAsyncThunk<FriendShip[], void, { rejectValue: string }>(
@@ -31,7 +32,7 @@ export const getFriendShips = createAsyncThunk<FriendShip[], void, { rejectValue
     }
   );
 
-  export const createdFriendShip = createAsyncThunk<FriendShip, FriendShip, { rejectValue: string }>(
+  export const createdFriendShip = createAsyncThunk<ApiResponse, FriendShip, { rejectValue: string }>(
     'friendship/create',
     async (friendship, { rejectWithValue }) => {
       try {
@@ -45,7 +46,7 @@ export const getFriendShips = createAsyncThunk<FriendShip[], void, { rejectValue
     }
   );
 
-  export const updatedFriendShip = createAsyncThunk<FriendShip, { id: number; friendShip: FriendShip }, { rejectValue: string }>(
+  export const updatedFriendShip = createAsyncThunk<ApiResponse, { id: number; friendShip: FriendShip }, { rejectValue: string }>(
     'friendship/update',
     async ({ id, friendShip }, { rejectWithValue }) => {
       try {
@@ -59,7 +60,7 @@ export const getFriendShips = createAsyncThunk<FriendShip[], void, { rejectValue
     }
   );
 
-  export const deletedFriendShip = createAsyncThunk<FriendShip, number, { rejectValue: string }>(
+  export const deletedFriendShip = createAsyncThunk<ApiResponse, number, { rejectValue: string }>(
     'friendship/delete',
     async (id, { rejectWithValue }) => {
       try {

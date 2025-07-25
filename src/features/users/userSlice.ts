@@ -11,8 +11,9 @@ interface UserState {
     email: string;
     phone: string;
     gender?: string;
-    birthday?: Date;
+    birthday?: string; // Chuyển từ Date? sang string?
     avatar?: string;
+    status?: number;
   };
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
@@ -27,6 +28,7 @@ const innerValue = {
   gender: '',
   birthday: undefined,
   avatar: '',
+  status: 0,
 };
 
 const userSlice = createSlice({
@@ -86,8 +88,9 @@ const userSlice = createSlice({
           password: userData.password || '',
           phone: userData.phone || '',
           gender: userData.gender || '',
-          birthday: userData.birthday ? new Date(userData.birthday) : undefined,
+          birthday: userData.birthday ? (typeof userData.birthday === 'string' ? userData.birthday : new Date(userData.birthday).toISOString()) : undefined,
           avatar: userData.avatar || '',
+          status: userData.status || 0,
         };
         state.error = null; 
       })
@@ -97,11 +100,12 @@ const userSlice = createSlice({
 
       // UPDATE
        .addCase(updateAvatarThunk.fulfilled, (state, action) => {
+        const updatedUser = action.payload;
         const index = state.items.findIndex(
-          (user) => user.email === action.payload.user.email
+          (user) => user.email === updatedUser.email
         );
         if (index !== -1) {
-          state.items[index] = action.payload.user;
+          state.items[index] = updatedUser;
         }  
         state.error = null;
       })
@@ -110,9 +114,7 @@ const userSlice = createSlice({
       })
 
       // UPDATE
-      .addCase(updateUserThunk.fulfilled, (state, action) => {
-            console.log('action.payload', action.payload);
-            
+      .addCase(updateUserThunk.fulfilled, (state, action) => {            
         const index = state.items.findIndex(
           (cat) => cat.email === action.payload.email
         );
