@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { UserOutlined, WechatOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Card, Typography, Modal } from 'antd';
 import { Link } from 'react-router-dom';
-import type { LoginRequest } from '../interface/UserResponse.ts';
+import type { LoginRequest } from '../../interface/UserResponse';
 import { toast } from 'react-toastify';
 import emailjs from '@emailjs/browser';
-import ResetPassword from './ResetPassword.tsx';
+import ResetPassword from './ResetPassword';
 
 const { Title, Text } = Typography;
 

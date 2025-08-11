@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createUser, getUsers, loginUser, updateUserThunk, updatePasswordThunk, updateAvatarThunk } from './userThunks';
+import { createUser, getUsers, loginUser, updatePasswordThunk, updateUserThunk } from './userThunks';
 import type { LoginResponse, UserResponse } from '../../interface/UserResponse';
 
 
@@ -92,6 +92,7 @@ const userSlice = createSlice({
           avatar: userData.avatar || '',
           status: userData.status || 0,
         };
+
         state.error = null; 
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -99,30 +100,18 @@ const userSlice = createSlice({
       })
 
       // UPDATE
-       .addCase(updateAvatarThunk.fulfilled, (state, action) => {
-        const updatedUser = action.payload;
-        const index = state.items.findIndex(
-          (user) => user.email === updatedUser.email
-        );
-        if (index !== -1) {
-          state.items[index] = updatedUser;
-        }  
-        state.error = null;
-      })
-      .addCase(updateAvatarThunk.rejected, (state, action) => {
-        state.error = action.payload as string || null;
-      })
-
-      // UPDATE
       .addCase(updateUserThunk.fulfilled, (state, action) => {            
         const index = state.items.findIndex(
-          (cat) => cat.email === action.payload.email
+          (user) => user.email === action.payload.email
         );
         if (index !== -1) {
           state.items[index] = action.payload;
         }
         state.error = null;
+        console.log(state.items);
+        console.log(action.payload);
       })
+    
       .addCase(updateUserThunk.rejected, (state, action) => {
         state.error = action.payload as string || null;
       })

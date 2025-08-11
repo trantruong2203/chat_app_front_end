@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import type { MenuProps } from 'antd';
 import { Avatar, Layout, Menu } from 'antd';
 import { 
@@ -11,8 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../stores/store';
 import { ContextAuth } from '../contexts/AuthContext';
 import { getObjectById } from '../services/respone';
-import type { UserResponse } from '../interface/UserResponse';
 import { useNavigate } from 'react-router-dom';
+import { setUser } from '../features/users/userSlice';
 
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -42,13 +42,14 @@ const itemsMenu: MenuItem[] = [
 
 const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void }> = ({ setIsUserModalOpen }) => {
   const {accountLogin} = useContext(ContextAuth);
-  const [userData, setUserData] = useState<UserResponse | null>(null);
   const { items } = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user.user);
+ 
   useEffect(() => {
     if (accountLogin) {
-      setUserData(getObjectById(items, accountLogin.email) || null);
+      dispatch(setUser(getObjectById(items, accountLogin.email) || null));
     }
   }, [accountLogin, items, dispatch]);
 
@@ -57,6 +58,8 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
       navigate('/contacts');
     } else if (e.key === '1') {
       navigate('/');
+    } else if (e.key === '3') {
+      navigate('/post');
     }
   };
 
@@ -88,8 +91,8 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
             alignItems: 'center',
             width: '40px',
             height: '40px',
-          }}  
-          src={userData?.avatar}
+          }}
+          src={user?.avatar || null}
           onClick={() => setIsUserModalOpen(true)}
         />
       </div>

@@ -1,139 +1,180 @@
-import { Modal, message, Upload, Button } from 'antd';
-import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Modal, Upload, Button, Avatar } from 'antd';
 import type { GetProp, UploadProps } from 'antd';
 import { useState } from 'react';
 import { uploadImageToCloudinary } from '../../config/CloudinaryConfig';
-import { updateAvatar } from '../../features/users/userApi';
 import { toast } from 'react-toastify';
-import { updateAvatarThunk } from '../../features/users/userThunks';
-import { useDispatch } from 'react-redux';
-import type { AppDispatch } from '../../stores/store';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../../stores/store';
 import type { UserResponse } from '../../interface/UserResponse';
-
-
+import { MdAddPhotoAlternate } from 'react-icons/md';
+import { updateUserThunk } from '../../features/users/userThunks';
+import { setUser } from '../../features/users/userSlice';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-const beforeUpload = (file: FileType) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('Bạn chỉ có thể tải lên file JPG/PNG!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Ảnh phải nhỏ hơn 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-};
-
-const UpdateAvatarModal: React.FC<{ 
-  openUpdateAvatar: boolean, 
-  setOpenUpdateAvatar: (open: boolean) => void, 
-  user: UserResponse | null,
-  setUser: (user: UserResponse | null) => void
-}> = ({ 
-  openUpdateAvatar, 
-  setOpenUpdateAvatar, 
-  user,
-  setUser
+const UpdateAvatarModal: React.FC<{
+  openUpdateAvatar: boolean,
+  setOpenUpdateAvatar: (open: boolean) => void,
+}> = ({
+  openUpdateAvatar,
+  setOpenUpdateAvatar,
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
-  const dispatch = useDispatch<AppDispatch>();
-  const handleCancel = () => {
-    setOpenUpdateAvatar(false);
-    setImageUrl(undefined);
-  };
-
-  const handleSaveAvatar = async () => {
-    if (!imageUrl) {
-      toast.error('Vui lòng chọn ảnh trước khi lưu!');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      // Gọi API cập nhật avatar
-      await updateAvatar(imageUrl);
-      // Cập nhật state user với thông tin mới
-      await dispatch(updateAvatarThunk(imageUrl)).unwrap();
-      if (user) {
-        setUser({
-          ...user,
-          avatar: imageUrl
-        });
-      }
-      setImageUrl(undefined);
-      toast.success('Cập nhật ảnh đại diện thành công!');
+    const [loading, setLoading] = useState(false);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [previewImage, setPreviewImage] = useState<string>();
+    const dispatch = useDispatch<AppDispatch>();
+    const user = useSelector((state: RootState) => state.user.user);
+    const handleCancel = () => {
       setOpenUpdateAvatar(false);
-    } catch (error) {
-      console.error('Lỗi khi cập nhật ảnh đại diện:', error);
-      toast.error('Cập nhật ảnh đại diện thất bại. Vui lòng thử lại sau!');
-    } finally {
+      setImageFile(null);
+      setPreviewImage('');
       setLoading(false);
-    }
+    };
+
+    const handleUpload = async () => {
+      try {
+        if (!previewImage) {
+          toast.error('Vui lòng chọn ảnh trước khi lưu!');
+          return;
+        }
+        setLoading(true);
+
+        let imageUrl = '';
+        
+        // Xử lý upload ảnh lên Cloudinary
+        if (imageFile) {
+          // Nếu có file ảnh được chọn
+          imageUrl = await uploadImageToCloudinary(imageFile, 'user');
+        } else if (previewImage.startsWith('data:')) {
+          // Nếu là base64, chuyển đổi thành File
+          const response = await fetch(previewImage);
+          const blob = await response.blob();
+          const file = new File([blob], 'user_image.jpg', { type: blob.type });
+          imageUrl = await uploadImageToCloudinary(file, 'user');
+        } else {
+          imageUrl = previewImage;
+        }
+
+        if (imageUrl === user?.avatar) {
+          toast.info('Không có thông tin nào thay đổi');
+          return;
+        }
+
+        await dispatch(updateUserThunk({ email: user?.email || '', account: { avatar: imageUrl } as UserResponse })).unwrap();
+        if (user) {
+          dispatch(setUser({
+            ...user,
+            avatar: imageUrl
+          }));
+        }
+
+        toast.success('Cập nhật ảnh đại diện thành công!');
+        setOpenUpdateAvatar(false);
+        setPreviewImage('');
+        setImageFile(null);
+        
+      } catch (error: unknown) {
+        console.error('Lỗi khi tải ảnh lên:', error);
+        
+        // Xử lý lỗi chi tiết hơn
+        if (error && typeof error === 'object' && 'message' in error) {
+          toast.error(`Lỗi: ${(error as { message: string }).message}`);
+        } else if (typeof error === 'string') {
+          toast.error(error);
+        } else {
+          toast.error('Tải ảnh lên thất bại. Vui lòng thử lại!');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const uploadProps = {
+      beforeUpload: (file: FileType) => {
+        // Kiểm tra loại file
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+          toast.error('Chỉ được phép tải lên file ảnh!');
+          return false;
+        }
+
+        // Kiểm tra kích thước file (giới hạn 5MB)
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+          toast.error('Kích thước file phải nhỏ hơn 5MB!');
+          return false;
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          if (reader.result) {
+            setPreviewImage(reader.result as string);
+            setImageFile(file);
+          }
+        };
+        return false;
+      },
+    };
+
+
+    return (
+      <>
+        <Modal
+          title="Cập nhật ảnh đại diện"
+          closable={{ 'aria-label': 'Custom Close Button' }}
+          open={openUpdateAvatar}
+          onCancel={handleCancel}
+          footer={null}
+        >
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            {previewImage ? (
+              <div style={{ position: 'relative' }}>
+                <Avatar
+                  src={previewImage}
+                  alt="Ảnh nhóm"
+                  size={60}
+                  style={{ marginRight: '10px' }}
+                />
+                <Button
+                  size="small"
+                  danger
+                  onClick={() => {
+                    setPreviewImage('');
+                    setImageFile(null);
+                  }}
+                  style={{ position: 'absolute', right: '-10px', top: '-10px', borderRadius: '50%' }}
+                >
+                  X
+                </Button>
+              </div>
+            ) : (
+              <Upload {...uploadProps} showUploadList={false}>
+                <Button
+                  icon={<MdAddPhotoAlternate size={20} />}
+                  style={{
+                    borderRadius: '50%',
+                    height: '60px',
+                    width: '60px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginRight: '10px'
+                  }}
+                >
+                </Button>
+              </Upload>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'end', alignItems: 'center', marginTop: '20px', gap: '10px' }}>
+            <Button type="primary" onClick={handleUpload} disabled={!previewImage || loading}>Lưu</Button>
+            <Button type="primary" danger onClick={handleCancel}>Hủy</Button>
+          </div>
+        </Modal>
+      </>
+    );
   };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpload = async (options: any) => {
-    const { file } = options;
-    setLoading(true);
-
-    try {
-      // Upload lên Cloudinary
-      const url = await uploadImageToCloudinary(file, 'chat_app_avatars');
-      setImageUrl(url);
-      toast.success('Tải ảnh lên thành công!');
-    } catch (error) {
-      console.error('Lỗi khi tải ảnh lên:', error);
-      toast.error('Tải ảnh lên thất bại. Vui lòng thử lại!');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Tải lên</div>
-    </button>
-  );
-
-  return (
-    <>
-      <Modal
-        title="Cập nhật ảnh đại diện"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={openUpdateAvatar}
-        onCancel={handleCancel}
-        footer={null}
-      >
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <Upload
-            name="avatar"
-            listType="picture-circle"
-            className="avatar-uploader"
-            showUploadList={false}
-            beforeUpload={beforeUpload}
-            customRequest={handleUpload}
-          >
-            {imageUrl ? (
-              <img 
-                src={imageUrl} 
-                alt="avatar" 
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-              />
-            ) : uploadButton}
-          </Upload>
-        </div>
-
-        <div style={{display: 'flex', justifyContent: 'end', alignItems: 'center', marginTop: '20px', gap: '10px'}}>
-          <Button type="primary" onClick={handleSaveAvatar} disabled={!imageUrl || loading}>Lưu</Button>
-          <Button type="primary" danger onClick={handleCancel}>Hủy</Button>
-        </div>
-      </Modal>
-    </>
-  );
-};
 
 export default UpdateAvatarModal;

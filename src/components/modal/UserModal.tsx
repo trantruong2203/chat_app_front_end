@@ -19,6 +19,7 @@ import type { UserResponse } from '../../interface/UserResponse';
 import { updateUserThunk } from '../../features/users/userThunks';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
+import { setUser } from '../../features/users/userSlice';
 import UpdateAvatarModel from './UpdateAvatarModal';
 
 const { Title } = Typography;
@@ -28,17 +29,17 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
   const { items } = useSelector((state: RootState) => state.user);
   const { accountLogin } = useContext(ContextAuth);
   const { logout } = useContext(ContextAuth);
-  const [user, setUser] = useState<UserResponse | null>(null);
   const [handleInput, setHandleInput] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
   const [openUpdateAvatar, setOpenUpdateAvatar] = useState(false);
-  
+  const user = useSelector((state: RootState) => state.user.user);
+
   useEffect(() => {
     if (accountLogin) {
-      setUser(getObjectById(items, accountLogin.email) || null);
+      dispatch(setUser(getObjectById(items, accountLogin.email) || null));
     }
-  }, [accountLogin, items]);
+  }, [accountLogin, items, dispatch]);
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -75,12 +76,11 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
       }
 
       await dispatch(updateUserThunk({ email: user?.email || '', account: updatePayload as UserResponse })).unwrap();
-      // Cập nhật state user với thông tin mới
       if (user) {
-        setUser({
+        dispatch(setUser({
           ...user,
           ...updatePayload
-        });
+        }));
       }
       toast.success('Cập nhật thông tin thành công');
       setHandleInput(false);
@@ -131,7 +131,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
             <div style={{ position: 'relative' }}>
               <Avatar
                 size={80}
-                src={getObjectById(items, accountLogin?.email ?? '')?.avatar || ''}
+                src={user?.avatar || ''}
                 icon={<UserOutlined />}
                 style={{
                   border: '4px solid white',
@@ -251,7 +251,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
           </Col>
         </Row>
       </Card>
-      <UpdateAvatarModel openUpdateAvatar={openUpdateAvatar} setOpenUpdateAvatar={setOpenUpdateAvatar} user={user} setUser={setUser}/>
+      <UpdateAvatarModel openUpdateAvatar={openUpdateAvatar} setOpenUpdateAvatar={setOpenUpdateAvatar}/>
     </Modal>
   );
 };

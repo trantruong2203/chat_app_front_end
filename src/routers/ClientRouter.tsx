@@ -5,7 +5,8 @@ import AddFriendRequest from '../pages/Contacts/AddFriendRequest';
 import ListGroups from '../pages/Contacts/ListGroups';
 import ListContacts from '../pages/Contacts/ListContacts';
 import AddGroupRequest from '../pages/Contacts/AddGroupRequest';
-import Messages from '../pages/Messages';
+import Messages from '../pages/message/Messages';
+import Post from '../pages/post/Post';
 
 interface CustomRoute {
   path: string;
@@ -18,7 +19,19 @@ const router: CustomRoute[] = [
   {
     path: '/',
     element: (
-       <Messages />
+      <Messages />
+    ),
+  },
+  {
+    path: '/:id',
+    element: (
+      <Messages />
+    ),
+  },
+  {
+    path: '/group/:id',
+    element: (
+      <Messages />
     ),
   },
   {
@@ -27,12 +40,18 @@ const router: CustomRoute[] = [
       <Contacts />
     ),
     subRoutes: [
-        {path: '/contacts/list-contacts', element: <ListContacts />},
-        {path: '/contacts/list-groups', element: <ListGroups />},
-        {path: '/contacts/add-group-request', element: <AddGroupRequest />},
-        {path: '/contacts/add-friend-request', element: <AddFriendRequest />},
-      ]
-    }
+      { path: '', element: <ListContacts /> },
+      { path: '/contacts/list-groups', element: <ListGroups /> },
+      { path: '/contacts/add-group-request', element: <AddGroupRequest /> },
+      { path: '/contacts/add-friend-request', element: <AddFriendRequest /> },
+    ]
+  },
+  {
+    path: '/post',
+    element: (
+      <Post />
+    )
+  }
 ];
 
 // Recursive function to render both top-level and nested routes
@@ -53,3 +72,6 @@ function ClientRouter(): ReactElement {
 }
 
 export default ClientRouter;
+
+
+

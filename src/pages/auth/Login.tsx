@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 import { LockOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row } from 'antd';
 import { useDispatch } from 'react-redux';
-import type { AppDispatch } from '../stores/store.ts';
-import { loginUser, updateUserThunk } from '../features/users/userThunks.ts';
+import type { AppDispatch } from '../../stores/store';
+import { loginUser, updateUserThunk } from '../../features/users/userThunks';
 import { Link, useNavigate } from 'react-router-dom';
-import type { LoginRequest, UserResponse } from '../interface/UserResponse.ts';
+import type { LoginRequest, UserResponse } from '../../interface/UserResponse';
 import { toast } from 'react-toastify';
-import { ContextAuth } from '../contexts/AuthContext.tsx';
-import { setUser } from '../features/users/userSlice.ts';
+import { ContextAuth } from '../../contexts/AuthContext';
+import { setUser } from '../../features/users/userSlice';
 
 const { Title, Text } = Typography;
 

@@ -1,16 +1,16 @@
 import { Avatar, Input, type GetProps, Badge } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { SearchOutlined, UserAddOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../stores/store';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from '../stores/store';
 import { ContextAuth } from '../contexts/AuthContext';
-import type { Message } from '../interface/UserResponse';
+import type { Message, ChatGroup } from '../interface/UserResponse';
 import { getObjectByEmail, getObjectById } from '../services/respone';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/vi'; // Import Vietnamese locale
+import 'dayjs/locale/vi';
+import { fetchLastMessagesByUserIdThunk } from '../features/messages/messageThunks';
 
-// Cấu hình dayjs với plugin relativeTime và tiếng Việt
 dayjs.extend(relativeTime);
 dayjs.locale('vi');
 
@@ -24,52 +24,41 @@ interface RecentChatsProps {
     setIsAddFriendModalOpen: (isAddFriendModalOpen: boolean) => void;
     setIsAddGroupModalOpen: (isAddGroupModalOpen: boolean) => void;
     selectedMessage: Message | null;
-    setSelectedMessage: (message: Message) => void;
+    handleMessageSelection: (message: Message) => void;
+    lastMessages: Message[];
 }
 
-function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selectedMessage, setSelectedMessage }: RecentChatsProps): React.ReactElement {
+function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selectedMessage, handleMessageSelection, lastMessages }: RecentChatsProps): React.ReactElement {
 
-    const messages = useSelector((state: RootState) => state.message.items);
-    const [myMessages, setMyMessages] = useState<Message[]>([]);
     const { items } = useSelector((state: RootState) => state.user);
     const { accountLogin } = useContext(ContextAuth);
-    const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id ;
+    const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
+    const chatGroup = useSelector((state: RootState) => state.chatGroup.items as ChatGroup[]);
+    const dispatch = useDispatch<AppDispatch>();
+
     useEffect(() => {
-        const getMessages = () => {
-            if (!accountLogin) return;
-            const messageArray: Message[] = [];
-           
-            if (!currentUserId) return;
-            
-            messages.filter((mes) => 
-                // điều kiện kiểm tra khi ngườfi dùng hiện tại gưi tin nhắn
-                (mes.senderid === currentUserId ||
-                // điều kiện kiểm tra khi ngườfi dùng hiện tại nhận tin nhắn
-                mes.receiverid === currentUserId)).map((message) => {
-                // Xác định ID của người đối thoại
-                const chatPartnerId = message.senderid === currentUserId ? 
-                    message.receiverid : message.senderid;
-                
-                // Tìm kiếm xem đã có tin nhắn với người này chưa
-                const index = messageArray.findIndex((item) => {
-                    // Lấy ID của đối tượng giao tiếp từ tin nhắn
-                    const itemPartnerId = item.senderid === currentUserId ? 
-                        item.receiverid : item.senderid;
-                    return itemPartnerId === chatPartnerId;
-                });
-                
-                if (index !== -1) {
-                    if (message.sentat > messageArray[index].sentat) {
-                        messageArray[index] = message;
-                    }
-                } else {
-                    messageArray.push(message);
-                }
-            });
-            setMyMessages(messageArray);
-        };
-        getMessages();
-    }, [messages, accountLogin, items]);    
+      if (!accountLogin || !currentUserId) return;
+      dispatch(fetchLastMessagesByUserIdThunk(currentUserId));
+    }, [accountLogin, currentUserId, dispatch]);
+
+
+    // Hàm lấy thông tin chat partner (group hoặc user)
+    const getChatPartnerName = (message: Message): string | undefined => {
+        if (message.groupid) {
+            const group = chatGroup.find((group) => group.id === message.groupid);
+            return group?.name;
+        }
+        return getObjectByEmail(items, message.receiverid === currentUserId ? message.senderid : message.receiverid ?? 0)?.username;
+    }
+
+    // Hàm lấy avatar của chat partner
+    const getChatPartnerAvatar = (message: Message): string | undefined => {
+        if (message.groupid) {
+            const group = chatGroup.find((group) => group.id === message.groupid);
+            return group?.avatar;
+        }
+        return getObjectByEmail(items, message.receiverid === currentUserId ? message.senderid : message.receiverid ?? 0)?.avatar;
+    }
 
     return (
         <div className="recent-chats-container" style={{
@@ -125,23 +114,36 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selected
                 overflow: 'auto',
                 height: '100%'
             }}>
-                {myMessages.map((message: Message) => {
-                    // Xác định người đối thoại
-                    const chatPartnerId = message.senderid === currentUserId ? 
-                        message.receiverid : message.senderid;
-                    // Kiểm tra xem đây có phải là cuộc trò chuyện đang được chọn không
-                    const isSelected = selectedMessage && 
-                        ((selectedMessage.senderid === currentUserId ? 
-                            selectedMessage.receiverid : selectedMessage.senderid) === chatPartnerId);
+                {lastMessages.map((message: Message) => {
+                    let isSelected = false;
                     
+                    if (selectedMessage) {
+                        if (message.groupid) {
+                            isSelected = selectedMessage.groupid === message.groupid;
+                        } else {
+                            // Tin nhắn cá nhân: tạo key duy nhất cho cuộc trò chuyện
+                            const getConversationKey = (msg: Message) => {
+                                const partnerId = msg.senderid === currentUserId ? msg.receiverid : msg.senderid;
+                                return `${currentUserId}-${partnerId}`;
+                            };
+                            
+                            const currentConversationKey = getConversationKey(message);
+                            const selectedConversationKey = getConversationKey(selectedMessage);
+                            
+                            isSelected = currentConversationKey === selectedConversationKey;
+                        }
+                    }
+
                     return (
-                        <div key={message.senderid + message.receiverid} style={{
+                        <div key={`${message.groupid ? `group-${message.groupid}` : `user-${message.senderid}-${message.receiverid}`}-${message.sentat}`} style={{
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '10px'
                         }}
-                        onClick={() => setSelectedMessage(message)}
+                            onClick={() => handleMessageSelection(message)}
                         >
+                            
+                            
                             <div style={{
                                 display: 'flex',
                                 padding: '10px 15px',
@@ -151,11 +153,11 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selected
                             }}
                                 className="chat-item"
                             >
-                                <Badge dot status="success" offset={[-4, 38]}>
+                                <Badge dot={false} status="success" offset={[-4, 38]}>
                                     <Avatar
                                         size={40}
                                         icon={<SearchOutlined />}
-                                        src={getObjectByEmail(items, message.receiverid === currentUserId ? message.senderid : message.receiverid)?.avatar}
+                                        src={getChatPartnerAvatar(message)}
                                         style={{
                                             backgroundColor: '#f0f0f0'
                                         }}
@@ -163,8 +165,8 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selected
                                 </Badge>
                                 <div style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ fontWeight: 'bold', color: '#000' }}>{getObjectByEmail(items, message.receiverid === currentUserId ? message.senderid : message.receiverid)?.username}</span>
-                                        <span style={{ fontSize: '12px', color: '#9E9E9E' }}>{dayjs(message.sentat).fromNow()}</span>
+                                        <span style={{ fontWeight: 'bold', color: '#000' }}>{getChatPartnerName(message)}</span>
+                                        <span style={{ fontSize: '12px', color: '#9E9E9E' }}>{dayjs(message.sentat).utcOffset(7).fromNow()}</span>
                                     </div>
                                     <div style={{
                                         fontSize: '13px',

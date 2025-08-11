@@ -18,12 +18,17 @@ function AuthProvider({ children }: AuthProviderProps) {
         getToken();
     }, []);
 
-    console.log(accountLogin);
     const getToken = async () => {
-        const response = await axios.get('http://localhost:3000/user/me', {
-            withCredentials: true
-        });
-       setAccountLogin(response.data.user);
+        try {
+            const response = await axios.get('http://localhost:3000/user/me', {
+                withCredentials: true
+            });
+            setAccountLogin(response.data.user);
+        } catch (error) {
+            console.log(error);
+            setAccountLogin(null);
+            navigate('/');
+        }
     };
 
     const logout = async () => {

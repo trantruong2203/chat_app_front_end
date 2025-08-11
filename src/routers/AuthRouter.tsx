@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import ForgetPassword from '../pages/ForgetPassword';
-import ResetPassword from '../pages/ResetPassword';
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import ForgetPassword from '../pages/auth/ForgetPassword';
+import ResetPassword from '../pages/auth/ResetPassword';
 
 interface CustomRoute {
   path: string;

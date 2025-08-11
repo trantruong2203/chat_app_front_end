@@ -31,13 +31,14 @@ export const register = async (account: UserResponse): Promise<UserResponse> => 
   return res.data;
 };
 
-export const updateUser = async (username: string, birthday: string, phone: string, gender: string, email: string, status: number): Promise<UserResponse> => {
+export const updateUser = async (username: string, birthday: string, phone: string, gender: string, email: string, status: number, avatar: string): Promise<UserResponse> => {
     const res = await axios.patch<UserResponse>(`${API}/user/update/${email}`, {
         username,
         birthday,
         phone,
         gender,
-        status
+        status,
+        avatar
     }, {
         withCredentials: true
     });
@@ -52,13 +53,3 @@ export const updatePassword = async (email: string, password: string): Promise<U
     });
     return res.data;
 };
-
-export const updateAvatar = async (avatarUrl: string): Promise<UserResponse> => {
-    const res = await axios.put<UserResponse>(`${API}/user/update-avatar`, {
-        avatarUrl
-    }, {
-        withCredentials: true
-    });
-    return res.data;
-};
-

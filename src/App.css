@@ -45,6 +45,11 @@
   box-shadow: none;
 }
 
+/* Contact item styles */
+.contact-item:hover {
+  background-color: #e4e6e9 !important;
+}
+
 .avatar-user {
   position: absolute;
   top: 90%;

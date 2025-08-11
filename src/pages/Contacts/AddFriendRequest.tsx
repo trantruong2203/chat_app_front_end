@@ -9,7 +9,7 @@ import { getObjectByEmail, getObjectById } from '../../services/respone';
 import type { FriendShip } from '../../interface/UserResponse';
 import { deletedFriendShip, updatedFriendShip } from '../../features/friendship/friendshipThunks';
 import { toast } from 'react-toastify';
-import { createdMessage, getMessages } from '../../features/messages/messageThunks';
+import { sendMessageThunk, getMessages } from '../../features/messages/messageThunks';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
@@ -52,14 +52,15 @@ const AddFriendRequest: React.FC = () => {
                 }
             }));
     
-            await dispatch(createdMessage(
+            await dispatch(sendMessageThunk(
                 {
-                    id: 0,
+                    groupid: null,
                     senderid: friendShip?.userid ?? 0,
                     receiverid:  friendShip?.sentat ?? 0,
                     content: `Bạn và ${getObjectByEmail(items, friendShip?.userid)?.username} đã trở thành bạn bè`,
                     sentat: dayjs().utcOffset(7).format('YYYY-MM-DD HH:mm:ss'),
-                    status: 1
+                    status: 1,
+                    messageid: 0
                 } ));
             
             // Cập nhật danh sách tin nhắn ngay sau khi tạo tin nhắn thành công

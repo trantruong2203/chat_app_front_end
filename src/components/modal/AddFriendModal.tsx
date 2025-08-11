@@ -27,12 +27,11 @@ const AddFriendModal: React.FC<{
 
   const getFrienShip = (): JSX.Element | string => {
     const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
-    
     const findFriendShip = friendShip.find(item => 
       // Kiểm tra nếu người dùng hiện tại đã gửi lời mời kết bạn cho người được tìm kiếm
-      (item.userid === currentUserId && item.sentat === findUser.id) || 
+      (item.userid == currentUserId && item.sentat == findUser.id) || 
       // Hoặc người được tìm kiếm đã gửi lời mời kết bạn cho người dùng hiện tại
-      (item.userid === findUser.id && item.sentat === currentUserId)
+      (item.userid == findUser.id && item.sentat == currentUserId)
     );
 
     if (!findFriendShip) {
@@ -55,7 +54,6 @@ const AddFriendModal: React.FC<{
     }
     return '';
   };
-
 
   const handleSearch = (): void => {
     const findAccount = items.find(item => item.email === searchValue || item.phone === searchValue);

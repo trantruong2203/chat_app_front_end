@@ -7,9 +7,10 @@ const { Title } = Typography;
 
 interface HeadMainProps {
   chatPartner?: UserResponse | null;
+  memberCount?: number;
 }
 
-const HeadMain: React.FC<HeadMainProps> = ({ chatPartner }) => {
+const HeadMain: React.FC<HeadMainProps> = ({ chatPartner, memberCount }) => {
   return (
     <div style={{
       display: 'flex',
@@ -30,8 +31,8 @@ const HeadMain: React.FC<HeadMainProps> = ({ chatPartner }) => {
           <Title level={5} style={{ margin: 0 }}>
             {chatPartner ? chatPartner.username : 'Chọn một cuộc trò chuyện'}
           </Title>
-          <div style={{ fontSize: '12px', color: '#666' }}>
-            {chatPartner?.email || ''}
+                      <div style={{ fontSize: '12px', color: '#666' }}>
+            {memberCount && memberCount > 0 ? `Cộng đồng.  ${memberCount} thành viên` : chatPartner?.email || ''}
           </div>
         </div>
       </div>

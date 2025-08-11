@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchAllUsers, login, register, updateAvatar, updatePassword, updateUser } from "./userApi";
+import { fetchAllUsers, login, register, updatePassword, updateUser } from "./userApi";
 import type { LoginRequest, LoginResponse, UserResponse } from "../../interface/UserResponse";
 import { AxiosError } from "axios";
 
@@ -70,7 +70,7 @@ export const updateUserThunk = createAsyncThunk<UserResponse, {email: string, ac
   'user/update',
   async ({email, account}, { rejectWithValue }) => {
     try {
-      return await updateUser(account.username, account.birthday, account.phone, account.gender, email, account.status);
+      return await updateUser(account.username, account.birthday, account.phone, account.gender, email, account.status, account.avatar);
     } catch (err: unknown) {
       if (err instanceof AxiosError && err.response?.data) {
         return rejectWithValue(err.response.data.message || 'Lỗi từ server');
@@ -84,21 +84,6 @@ export const updatePasswordThunk = createAsyncThunk<UserResponse, {email: string
   async ({email, password}, { rejectWithValue }) => {
     try {
       return await updatePassword(email, password);
-    } catch (err: unknown) {
-      if (err instanceof AxiosError && err.response?.data) {
-        return rejectWithValue(err.response.data.message || 'Lỗi từ server');
-      }
-      return rejectWithValue('Lỗi không xác định');
-    }
-  }
-);
-
-// Cập nhật avatar
-export const updateAvatarThunk = createAsyncThunk<UserResponse, string, { rejectValue: string }>(
-  'user/updateAvatar',
-  async (avatarUrl, { rejectWithValue }) => {
-    try {
-      return await updateAvatar(avatarUrl);
     } catch (err: unknown) {
       if (err instanceof AxiosError && err.response?.data) {
         return rejectWithValue(err.response.data.message || 'Lỗi từ server');

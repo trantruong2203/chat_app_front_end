@@ -3,9 +3,9 @@ import { WechatOutlined, UserOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { updatePasswordThunk } from '../features/users/userThunks.ts';
+import { updatePasswordThunk } from '../../features/users/userThunks';
 import { toast } from 'react-toastify';
-import type { AppDispatch } from '../stores/store.ts';
+import type { AppDispatch } from '../../stores/store';
 
 const { Title, Text } = Typography;
 
@@ -32,7 +32,6 @@ const ResetPassword: React.FC<{email: string}> = ({email}) => {
         }
         return true;
       } catch {
-        // Form validation error đã được xử lý bởi Ant Design
         return false;
       }
     };

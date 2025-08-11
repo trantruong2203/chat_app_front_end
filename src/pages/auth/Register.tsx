@@ -16,9 +16,9 @@ import {
   Divider,
 } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { createUser } from '../features/users/userThunks.ts';
-import type { UserResponse } from '../interface/UserResponse.js';
-import type { AppDispatch, RootState } from '../stores/store.ts';
+import { createUser } from '../../features/users/userThunks';
+import type { UserResponse } from '../../interface/UserResponse';
+import type { AppDispatch, RootState } from '../../stores/store';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

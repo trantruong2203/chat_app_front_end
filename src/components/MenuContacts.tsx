@@ -13,12 +13,11 @@ const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?
 interface MenuContactsProps {
     setIsAddFriendModalOpen: (isAddFriendModalOpen: boolean) => void;
     setIsAddGroupModalOpen: (isAddGroupModalOpen: boolean) => void;
-}
+    }
 
 function MenuContacts({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: MenuContactsProps): React.ReactElement {
     const navigate = useNavigate();
     const location = useLocation();
-
     // Style chung cho các menu item
     const menuItemStyle = {
         display: 'flex',
@@ -127,12 +126,14 @@ function MenuContacts({ setIsAddFriendModalOpen, setIsAddGroupModalOpen }: MenuC
                     <div 
                         style={{
                             ...menuItemStyle,
-                            backgroundColor: isActive('/contacts/list-contacts') ? '#e6f7ff' : 'transparent',
-                            color: isActive('/contacts/list-contacts') ? '#1890ff' : '#333',
+                            backgroundColor: isActive('/contacts') ? '#e6f7ff' : 'transparent',
+                            color: isActive('/contacts') ? '#1890ff' : '#333',
                         }}
-                        onMouseEnter={(e) => !isActive('/contacts/list-contacts') && (e.currentTarget.style.backgroundColor = '#f0f0f0')} 
-                        onMouseLeave={(e) => !isActive('/contacts/list-contacts') && (e.currentTarget.style.backgroundColor = 'transparent')}
-                        onClick={() => navigate('/contacts/list-contacts')}
+                        onMouseEnter={(e) => !isActive('/contacts') && (e.currentTarget.style.backgroundColor = '#f0f0f0')} 
+                        onMouseLeave={(e) => !isActive('/contacts') && (e.currentTarget.style.backgroundColor = 'transparent')}
+                        onClick={() => {
+                            navigate('/contacts');
+                        }}
                     >
                         <AiOutlineUser style={{ fontSize: '24px' }} />
                         <p style={{ fontSize: '16px', margin: 0, fontWeight: isActive('/contacts/list-contacts') ? '500' : 'normal' }}>Danh sách bạn bè</p>
