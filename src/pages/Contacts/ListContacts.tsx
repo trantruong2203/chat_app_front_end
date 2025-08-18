@@ -5,10 +5,16 @@ import { getObjectByEmail, getObjectById } from '../../services/respone';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../stores/store';
 import { ContextAuth } from '../../contexts/AuthContext';
-import type { FriendShip } from '../../interface/UserResponse';
+import type { FriendShip, UserResponse } from '../../interface/UserResponse';
 import { useNavigate } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client';
 const { Search } = Input;
 const { Title, Text } = Typography;
+
+interface OnlineUser {
+  userId: string;
+  user: UserResponse;
+}
 
 const ListContacts: React.FC = () => {
   const [contacts, setContacts] = useState<FriendShip[]>([]);
@@ -17,7 +23,8 @@ const ListContacts: React.FC = () => {
   const { items } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
-
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   useEffect(() => {
     const getFriendShip = () => {
       const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
@@ -29,6 +36,8 @@ const ListContacts: React.FC = () => {
     const friendShipData = getFriendShip();
     setContacts(friendShipData);
   }, [friendShip, items, accountLogin]);
+  console.log(contacts);
+  
 
   const handleSearch = (value: string) => {
     if (!value.trim()) {
@@ -66,6 +75,58 @@ const ListContacts: React.FC = () => {
     navigate(`/${chatPartnerId}`);
   };
 
+  useEffect(() => {
+    // Kết nối socket
+    const newSocket = io('http://localhost:3000', {
+      withCredentials: true
+    });
+
+    // Xử lý đăng nhập socket
+    if (accountLogin?.email) {
+        newSocket.emit("login", accountLogin.email);
+    }
+
+    // Lắng nghe sự kiện user online
+    newSocket.on("userOnline", (data: OnlineUser) => {
+        setOnlineUsers(prev => {
+            const existingUser = prev.find(user => user.userId === data.userId);
+            if (!existingUser) {
+                return [...prev, data];
+            }
+            return prev;
+        });
+    });
+
+    // Lắng nghe sự kiện user offline
+    newSocket.on("userOffline", (data: { userId: string }) => {
+        setOnlineUsers(prev => prev.filter(user => user.userId !== data.userId));
+    });
+
+    // Nhận danh sách user online hiện tại
+    newSocket.on("onlineUsers", (users: OnlineUser[]) => {
+        setOnlineUsers(users);
+    });
+    
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
+}, [accountLogin?.email]);
+
+// Xử lý logout khi component unmount
+useEffect(() => {
+    return () => {
+        if (socket && socket.connected) {
+            socket.emit("logout");
+        }
+    };
+}, [socket]);
+
+const isUserOnline = (message: FriendShip): boolean => {
+  const partnerId = message.sentat == currentUserId ? message.userid : message.sentat;
+  return onlineUsers.some(onlineUser => onlineUser.user.id == partnerId);
+};
   return (
     <div
       style={{
@@ -125,7 +186,7 @@ const ListContacts: React.FC = () => {
                   avatar={
                     <Badge
                       dot
-                      color={item.status === 1 ? 'green' : 'gray'}
+                      color={isUserOnline(item) ? 'green' : 'gray'}
                       offset={[-5, 40]}
                     >
                       <Avatar

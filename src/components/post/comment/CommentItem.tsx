@@ -4,7 +4,6 @@ import {
   Typography,
   Button,
   Space,
-  message
 } from 'antd';
 import {
   MoreOutlined
@@ -14,23 +13,35 @@ import CommentForm from './CommentForm';
 import dayjs from 'dayjs';
 import { getObjectByEmail } from '../../../services/respone';
 import type { UserResponse } from '../../../interface/UserResponse';
+import type { UploadChangeParam } from 'antd/es/upload';
+import type { UploadFile } from 'antd';
 
 interface CommentItemProps {
   comment: Comment;
   level: number;
-  onReply: (commentId: number, content: string) => void;
   items: UserResponse[];
   currentUserId?: number;
   maxLevel?: number;
+  handleCommentReply: (commentId: number, content: string) => void;
+  handleImageSelect?: (info: UploadChangeParam<UploadFile>) => void;
+  handleRemoveImage?: (index: number) => void;
+  previewImages?: string[];
+  selectedImages?: File[];
+  uploadFileList?: UploadFile[];
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   level,
-  onReply,
   items,
   currentUserId,
-  maxLevel = 3
+  maxLevel = 3,
+  handleCommentReply,
+  handleImageSelect,
+  handleRemoveImage,
+  previewImages,
+  selectedImages,
+  uploadFileList
 }) => {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const canReply = level < maxLevel;
@@ -59,16 +70,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     }
   };
 
-  const handleReplySubmit = (content: string) => {
-    try {
-      onReply(comment.id, content);
-      setShowReplyForm(false);
-      message.success('Đã trả lời bình luận');
-    } catch (error) {
-      console.error('Error replying to comment:', error);
-      message.error('Không thể trả lời bình luận');
-    }
-  };
+
 
   const handleReplyCancel = () => {
     setShowReplyForm(false);
@@ -105,6 +107,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <Paragraph className="comment-text" style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
               {comment.content}
             </Paragraph>
+            {comment.imgUrl && (
+              <img
+                src={comment.imgUrl}
+                alt="comment"
+                style={{ maxWidth: '100%', borderRadius: 8, marginTop: 8 }}
+              />
+            )}
           </div>
           <Button
             type="text"
@@ -145,13 +154,20 @@ const CommentItem: React.FC<CommentItemProps> = ({
         {showReplyForm && (
           <div className="comment-reply-form">
             <CommentForm
-              postId={comment.postId}
               parentId={comment.id}
               placeholder={`Trả lời ${commentAuthor?.username || 'người dùng'}...`}
-              onSubmit={(data) => handleReplySubmit(data.content)}
               onCancel={handleReplyCancel}
               compact={true}
               autoFocus={true}
+              handleImageSelect={handleImageSelect}
+              handleRemoveImage={handleRemoveImage || (() => {})}
+              previewImages={previewImages}
+              selectedImages={selectedImages}
+              uploadFileList={uploadFileList}
+              handleCommentSubmit={(data) => {
+                handleCommentReply(comment.id, data.content);
+                setShowReplyForm(false);
+              }}
             />
           </div>
         )}

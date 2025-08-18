@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Avatar, Button, Modal, Divider, Typography, Card, Descriptions, Row, Col, Input, Form, Select, DatePicker } from 'antd';
+import { Avatar, Button, Modal, Divider, Typography, Card, Descriptions, Row, Col, Input, Form, Select, DatePicker, App } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../stores/store';
 import { ContextAuth } from '../../contexts/AuthContext';
@@ -18,7 +18,6 @@ import { getObjectById } from '../../services/respone';
 import type { UserResponse } from '../../interface/UserResponse';
 import { updateUserThunk } from '../../features/users/userThunks';
 import dayjs from 'dayjs';
-import { toast } from 'react-toastify';
 import { setUser } from '../../features/users/userSlice';
 import UpdateAvatarModel from './UpdateAvatarModal';
 
@@ -34,6 +33,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
   const dispatch = useDispatch<AppDispatch>();
   const [openUpdateAvatar, setOpenUpdateAvatar] = useState(false);
   const user = useSelector((state: RootState) => state.user.user);
+  const { message } = App.useApp(); // ✅ lấy message từ context
 
   useEffect(() => {
     if (accountLogin) {
@@ -71,7 +71,7 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
       if (values.phone !== user?.phone) updatePayload.phone = values.phone;
 
       if (Object.keys(updatePayload).length === 0) {
-        toast.info('Không có thông tin nào thay đổi');
+        message.info('Không có thông tin nào thay đổi');
         return;
       }
 
@@ -82,10 +82,10 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
           ...updatePayload
         }));
       }
-      toast.success('Cập nhật thông tin thành công');
+      message.success('Cập nhật thông tin thành công');
       setHandleInput(false);
     } catch (error) {
-      toast.error('Cập nhật thông tin thất bại: ' + error);
+      message.error('Cập nhật thông tin thất bại: ' + error);
       console.log(error);
     }
   };
@@ -243,7 +243,10 @@ const UserModal: React.FC<{ isModalOpen: boolean, setIsModalOpen: (isModalOpen: 
                 danger
                 icon={<LogoutOutlined />}
                 block
-                onClick={() => logout()}
+                onClick={() => {
+                  message.success('Đăng xuất thành công!');
+                  logout();
+                }}
               >
                 Đăng xuất
               </Button>

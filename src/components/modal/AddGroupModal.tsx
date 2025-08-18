@@ -106,8 +106,8 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose }) => {
         status: 1,
       } as ChatGroup;
 
-      const response = await dispatch(createdChatGroup(group));
-      const groupId = response.payload?.data?.id ?? 0;
+      const response = await dispatch(createdChatGroup(group)).unwrap();
+      const groupId = response.data?.id ?? 0;
     
       await dispatch(createdGroupMember({
         groupid: groupId,
@@ -151,7 +151,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose }) => {
         }
       ));
     
-      if (response.payload && allMembersAdded) {
+      if (response.data && allMembersAdded) {
         toast.success('Tạo nhóm chat thành công');
         resetForm();
         onClose();

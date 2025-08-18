@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createUser, getUsers, loginUser, updatePasswordThunk, updateUserThunk } from './userThunks';
+import { createUser, fetchUserOnlineThunk, getUsers, loginUser, updatePasswordThunk, updateUserThunk } from './userThunks';
 import type { LoginResponse, UserResponse } from '../../interface/UserResponse';
 
 
@@ -18,6 +18,7 @@ interface UserState {
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   searchKeyword: string;
+  userOnline: UserResponse[];
 }
 
 const innerValue = {
@@ -39,6 +40,7 @@ const userSlice = createSlice({
     status: 'idle',
     error: null as string | null,
     searchKeyword: '',
+    userOnline: [] as UserResponse[],
   } as UserState,
   reducers: {
     setSearchKeyword: (state, action) => {
@@ -125,7 +127,13 @@ const userSlice = createSlice({
         state.error = action.payload as string || null;
       })
 
-
+      // FETCH USER ONLINE
+      .addCase(fetchUserOnlineThunk.fulfilled, (state, action) => {
+        state.items = action.payload as UserResponse[];
+      })
+      .addCase(fetchUserOnlineThunk.rejected, (state, action) => {
+        state.error = action.payload as string || null;
+      })
   },
 });
 

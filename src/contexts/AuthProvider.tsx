@@ -5,7 +5,6 @@ import axios from 'axios';
 import type { UserResponse } from '../interface/UserResponse';
 import { useNavigate } from 'react-router-dom';
 
-
 interface AuthProviderProps {
     children: ReactNode;
 }
@@ -38,14 +37,14 @@ function AuthProvider({ children }: AuthProviderProps) {
         setAccountLogin(null);
         navigate('/');
     };
-  
+
 
     const authContextValue: AuthContextType = {
         accountLogin,
         logout,
         getToken,
     };
- 
+
     return (
         <ContextAuth.Provider value={authContextValue}>
             {children}

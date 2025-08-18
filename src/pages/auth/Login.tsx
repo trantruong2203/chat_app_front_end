@@ -1,12 +1,11 @@
 import React, { useContext } from 'react';
 import { LockOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row } from 'antd';
+import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row, App } from 'antd';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../stores/store';
 import { loginUser, updateUserThunk } from '../../features/users/userThunks';
 import { Link, useNavigate } from 'react-router-dom';
 import type { LoginRequest, UserResponse } from '../../interface/UserResponse';
-import { toast } from 'react-toastify';
 import { ContextAuth } from '../../contexts/AuthContext';
 import { setUser } from '../../features/users/userSlice';
 
@@ -17,20 +16,23 @@ const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { getToken } = useContext(ContextAuth);
+   const { message } = App.useApp(); // ✅ lấy message từ context
 
   const onFinish = async (values: LoginRequest): Promise<void> => {
     try {
       const user = await dispatch(loginUser(values));
-      console.log(user);
-      if (!user) {
-        toast.error("Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!");
+
+      if (user.error) {
+        message.error('Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!');
         return;
       }
       await getToken();
-      await dispatch(updateUserThunk({ email: user?.meta.arg.email || '', account: {
-        ...user,
-        status: 1
-      } as unknown as UserResponse })).unwrap();
+      await dispatch(updateUserThunk({
+        email: user?.meta.arg.email || '', account: {
+          ...user,
+          status: 1
+        } as unknown as UserResponse
+      })).unwrap();
       // Cập nhật state user với thông tin mới
       if (user) {
         setUser({
@@ -38,20 +40,19 @@ const Login: React.FC = () => {
           status: 1
         });
       }
-      toast.success("Đăng nhập thành công!");
+     message.success('Đăng nhập thành công!');
       navigate('/');
     } catch (error: unknown) {
       console.error('Lỗi đăng nhập:', error);
-      toast.error("Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!");
     }
   };
 
 
   return (
-    <div className="auth-background" style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      justifyContent: 'center', 
+    <div className="auth-background" style={{
+      minHeight: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
       alignItems: 'center',
       position: 'relative'
     }}>
@@ -64,7 +65,7 @@ const Login: React.FC = () => {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         zIndex: 0
       }}></div>
-      
+
       <Card
         className="glass-effect fade-in"
         style={{
@@ -79,12 +80,12 @@ const Login: React.FC = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 30 }}>
-          <div className="gradient-bg" style={{ 
-            width: '70px', 
-            height: '70px', 
-            borderRadius: '50%', 
-            display: 'flex', 
-            justifyContent: 'center', 
+          <div className="gradient-bg" style={{
+            width: '70px',
+            height: '70px',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
             alignItems: 'center',
             margin: '0 auto 16px',
             boxShadow: 'var(--shadow-md)'
@@ -142,9 +143,9 @@ const Login: React.FC = () => {
               block
               type="primary"
               htmlType="submit"
-              style={{ 
-                height: '46px', 
-                borderRadius: 'var(--radius-md)', 
+              style={{
+                height: '46px',
+                borderRadius: 'var(--radius-md)',
                 border: 'none',
                 fontWeight: '500',
                 fontSize: '16px',

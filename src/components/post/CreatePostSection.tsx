@@ -5,28 +5,32 @@ import {
   Card,
   Divider,
   Upload,
+  Tooltip,
 } from 'antd';
 import {
   PictureOutlined,
   SmileOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
+import type { UploadFile } from 'antd';
 import { getObjectByEmail } from '../../services/respone';
-import type { User } from '../../interface/UserResponse';
+import type { UserResponse } from '../../interface/UserResponse';
+import type { UploadChangeParam } from 'antd/es/upload';
 
 interface CreatePostSectionProps {
-  users: User[];
+  users: UserResponse[];
   currentUserId: number | undefined;
   onCreatePost: () => void;
-  uploadProps: UploadProps;
+  handleImageSelect: (info: UploadChangeParam<UploadFile>) => void;
+  uploadFileList: UploadFile[];
 }
 
 const CreatePostSection: React.FC<CreatePostSectionProps> = React.memo(({
   users,
   currentUserId,
   onCreatePost,
-  uploadProps
+  handleImageSelect,
+  uploadFileList
 }) => {
   const currentUser = getObjectByEmail(users, currentUserId ?? '');
 
@@ -34,25 +38,32 @@ const CreatePostSection: React.FC<CreatePostSectionProps> = React.memo(({
     <Card style={{
       marginBottom: 20,
       borderRadius: '12px',
-      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+      border: '1px solid var(--yahoo-border)',
+      background: 'var(--yahoo-bg)'
     }}>
       {/* Create Post Input */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 15 }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
         <Avatar
           src={currentUser?.avatar}
-          size="large"
-          style={{ marginRight: 12 }}
+          size={48}
+          style={{ 
+            marginRight: 12,
+            border: '2px solid var(--yahoo-border)'
+          }}
         />
         <Button
           type="text"
           style={{
             flex: 1,
-            borderRadius: '50px',
-            height: '40px',
-            backgroundColor: '#f0f2f5',
-            color: '#000',
+            borderRadius: '8px',
+            height: '48px',
+            backgroundColor: 'var(--yahoo-bg-secondary)',
+            color: 'var(--yahoo-text-secondary)',
             fontSize: '15px',
-            justifyContent: 'flex-start'
+            justifyContent: 'flex-start',
+            padding: '0 16px',
+            border: '1px solid var(--yahoo-border)'
           }}
           onClick={onCreatePost}
         >
@@ -60,40 +71,66 @@ const CreatePostSection: React.FC<CreatePostSectionProps> = React.memo(({
         </Button>
       </div>
 
-      <Divider style={{ margin: '8px 0' }} />
+      <Divider style={{ margin: '12px 0', borderColor: 'var(--yahoo-border)' }} />
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Upload
-          multiple
-          accept="image/*"
-          {...uploadProps}
-          showUploadList={false}
-        >
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Tooltip title="Thêm ảnh/video">
+          <Upload
+            multiple
+            accept="image/*"
+            beforeUpload={() => false}
+            onChange={handleImageSelect}
+            showUploadList={false}
+            fileList={uploadFileList}
+          >
+            <Button 
+              type="text" 
+              icon={<PictureOutlined style={{ fontSize: '18px', color: 'var(--yahoo-primary)' }} />} 
+              style={{ 
+                flex: 1, 
+                borderRadius: '8px', 
+                height: '40px',
+                color: 'var(--yahoo-text-secondary)',
+                border: '1px solid transparent'
+              }}
+            >
+              Ảnh/Video
+            </Button>
+          </Upload>
+        </Tooltip>
+
+        <Tooltip title="Thêm cảm xúc">
           <Button
             type="text"
-            icon={<PictureOutlined style={{ fontSize: '18px', color: '#45bd62' }} />}
-            style={{ flex: 1, borderRadius: '8px', height: '40px' }}
+            icon={<SmileOutlined style={{ fontSize: '18px', color: 'var(--yahoo-warning)' }} />}
+            style={{ 
+              flex: 1, 
+              borderRadius: '8px', 
+              height: '40px',
+              color: 'var(--yahoo-text-secondary)',
+              border: '1px solid transparent'
+            }}
           >
-            Ảnh/Video
+            Cảm xúc
           </Button>
-        </Upload>
+        </Tooltip>
 
-        <Button
-          type="text"
-          icon={<SmileOutlined style={{ fontSize: '18px', color: '#f7b928' }} />}
-          style={{ flex: 1, borderRadius: '8px', height: '40px' }}
-        >
-          Cảm xúc
-        </Button>
-
-        <Button
-          type="text"
-          icon={<GlobalOutlined style={{ fontSize: '18px', color: '#1877f2' }} />}
-          style={{ flex: 1, borderRadius: '8px', height: '40px' }}
-        >
-          Vị trí
-        </Button>
+        <Tooltip title="Thêm vị trí">
+          <Button
+            type="text"
+            icon={<GlobalOutlined style={{ fontSize: '18px', color: 'var(--yahoo-success)' }} />}
+            style={{ 
+              flex: 1, 
+              borderRadius: '8px', 
+              height: '40px',
+              color: 'var(--yahoo-text-secondary)',
+              border: '1px solid transparent'
+            }}
+          >
+            Vị trí
+          </Button>
+        </Tooltip>
       </div>
     </Card>
   );

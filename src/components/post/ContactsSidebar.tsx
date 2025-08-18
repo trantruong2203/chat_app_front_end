@@ -12,23 +12,21 @@ import {
   SearchOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
-import type { FriendShip} from '../../interface/UserResponse';
 import { getObjectByEmail } from '../../services/respone';
+import type { UserResponse } from '../../interface/UserResponse';
 
 const { Sider } = Layout;
 const { Title } = Typography;
 
 interface ContactsSidebarProps {
-  contacts: FriendShip[];
-  currentUserId: number | undefined;
+  contacts: number[];
   loading?: boolean;
-  users
+  users: UserResponse[];
 }
 
 const ContactsSidebar: React.FC<ContactsSidebarProps> = React.memo(({
   contacts,
   users,
-  currentUserId,
   loading = false
 }) => {
   return (
@@ -64,10 +62,8 @@ const ContactsSidebar: React.FC<ContactsSidebarProps> = React.memo(({
         <List
           loading={loading}
           dataSource={contacts}
-          renderItem={(contact: FriendShip) => {
-            const friendInfo = contact.sentat === currentUserId
-              ? getObjectByEmail(users, contact.userid)
-              : getObjectByEmail(users, contact.sentat);
+          renderItem={(contactId: number) => {
+            const friendInfo = getObjectByEmail(users, contactId);
 
             return (
               <List.Item

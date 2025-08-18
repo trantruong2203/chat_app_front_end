@@ -87,3 +87,6 @@ body {
   background-size: cover;
   background-position: center;
 }
+.login-success-toast {
+  display: none !important; /* Ẩn toast */
+}

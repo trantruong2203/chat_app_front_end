@@ -5,19 +5,18 @@ import {
   Typography,
   Button,
   Divider,
-  Image,
-  Space,
   Spin,
-  message,
-  Empty
+  Empty,
+  type UploadFile
 } from 'antd';
+import type { UploadChangeParam } from 'antd/es/upload';
 import {
   CommentOutlined,
   ShareAltOutlined,
   GlobalOutlined,
   MoreOutlined,
-  LikeFilled,
-  LikeOutlined
+  LikeOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../../stores/store';
@@ -29,6 +28,9 @@ import './PostDetailModal.css';
 import CommentForm from '../post/comment/CommentForm';
 import { createdComment, getCommentsByPostId } from '../../features/comments/commentThunks';
 import { buildCommentTree } from '../../utils/commentMapper';
+import PostImages from '../post/PostImages';
+import { uploadImageToCloudinary } from '../../config/CloudinaryConfig';
+import { toast } from 'react-toastify';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -40,13 +42,19 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
   favoriteCounts,
   handleLike,
   isFavorite,
-  currentUserId
+  currentUserId,
+  isLikeLoading = false,
+  refreshPostCount,
+  commentCounts,
 }) => {
   const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const { items: comments } = useSelector((state: RootState) => state.comment);
   const { items } = useSelector((state: RootState) => state.user);
-  
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
+
   // Build comment tree from flat array
   const commentTree = buildCommentTree(comments);
   
@@ -71,34 +79,59 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
 
   useEffect(() => {
     if (post) {
-      const getComment = dispatch(getCommentsByPostId(post.id));
-      console.log(getComment);
+      dispatch(getCommentsByPostId(post.id)).unwrap();
     }
   }, [post, dispatch]);
 
   const handleCommentSubmit = async (data: CommentFormData) => {
-    if (!currentUserId || !post) {
-      message.error('Vui lòng đăng nhập để bình luận');
-      return;
-    }
-
+    if (!currentUserId || !post) return;
+    
     setSubmitting(true);
     try {
+      let imgurl = '';
+      
+      // Xử lý upload ảnh nếu có
+      if (selectedImages.length > 0) {
+        try {
+          // Upload ảnh đầu tiên (có thể mở rộng để upload nhiều ảnh sau)
+          const imageUrl = await uploadImageToCloudinary(selectedImages[0], 'comment_images');
+          imgurl = imageUrl;
+        } catch (uploadError) {
+          console.error(`Lỗi khi upload ảnh:`, uploadError);
+          toast.error('Lỗi khi upload ảnh. Vui lòng thử lại.');
+          setSubmitting(false);
+          return;
+        }
+      }
+      
       const commentData = {
-        userid: data.userid,
-        postid: data.postid,
-        content: data.content,
-        iconid: data.iconid || undefined,
-        imgurl: data.imgurl || undefined,
-        commentid: data.commentid || undefined
+        userid: currentUserId,
+        postid: post.id,
+        content: data.content.trim(),
+        iconid: 0,
+        imgurl: imgurl,
+        commentid: data.commentid || undefined,
+        createdat: data.createdat,
       };
-
+      
+      // Tạo comment
       await dispatch(createdComment(commentData));
-      message.success('Đã thêm bình luận');
-      dispatch(getCommentsByPostId(post.id));
+      
+      // Lấy lại danh sách comment để cập nhật UI
+      await dispatch(getCommentsByPostId(post.id)).unwrap();
+      
+      // Reset form sau khi thành công
+      setSelectedImages([]);
+      setPreviewImages([]);
+      setUploadFileList([]);
+      setSubmitting(false);
+      refreshPostCount(post.id);
+      
+      toast.success('Bình luận đã được gửi thành công!');
+      
     } catch (error) {
       console.error('Error submitting comment:', error);
-      message.error('Không thể thêm bình luận');
+      toast.error('Có lỗi xảy ra khi gửi bình luận. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }
@@ -107,23 +140,58 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
   const handleCommentReply = async (commentId: number, content: string) => {
     if (!post || !currentUserId) return;
     
-    await handleCommentSubmit({
+    // Tạo dữ liệu comment reply
+    const replyData: CommentFormData = {
       id: 0,
       userid: currentUserId,
-      createdat: new Date().toISOString(),
+      postid: post.id,
+      content: content.trim(),
+      createdat: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       iconid: 0,
       imgurl: '',
-      content,
-      postid: post.id,
       commentid: commentId 
+    };
+        await handleCommentSubmit(replyData);
+  };
+
+  const handleImageSelect = (info: UploadChangeParam<UploadFile>) => {
+    const { fileList } = info;
+    const validFiles = fileList.filter((file: UploadFile) => file.status !== 'error' && file.originFileObj instanceof File);
+
+    setUploadFileList(validFiles);
+    const validFileObjects = validFiles.map((file: UploadFile) => file.originFileObj as File);
+    setSelectedImages(validFileObjects);
+
+    const newPreviewImages: string[] = [];
+    validFileObjects.forEach((file: File) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        newPreviewImages.push(e.target?.result as string);
+        if (newPreviewImages.length === validFileObjects.length) {
+          setPreviewImages([...newPreviewImages]);
+        }
+      };
+      reader.onerror = () => {
+        toast.error('Lỗi khi đọc file ảnh');
+      };
+      reader.readAsDataURL(file);
     });
   };
 
+  const handleRemoveImage = (index: number) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviewImages = previewImages.filter((_, i) => i !== index);
+    const newUploadFileList = uploadFileList.filter((_, i) => i !== index);
+    setSelectedImages(newImages);
+    setPreviewImages(newPreviewImages);
+    setUploadFileList(newUploadFileList);
+  };
+  
   if (!post) return null;
 
   return (
     <Modal
-      title={`bai viet cua `}
+      title={`Bài viết của ${postAuthor?.username}`}
       open={visible}
       onCancel={onClose}
       footer={null} 
@@ -131,6 +199,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
       style={{ maxWidth: '800px' }}
       className="post-detail-modal"
       styles={{
+        
           body: { padding: 0, maxHeight: 'calc(90vh - 120px)' },
           header: { textAlign: 'center', fontSize: '18px', fontWeight: 'bold', padding: '16px 20px' },
         }}
@@ -168,30 +237,20 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
           </Paragraph>
           
           {postImages && postImages.length > 0 && (
-            <div className="post-images">
-              {postImages.map((image, index) => (
-                <Image
-                  key={index}
-                  src={image}
-                  alt="Post image"
-                  className="post-image"
-                />
-              ))}
-            </div>
+           <PostImages images={postImages} />
           )}
         </div>
 
         {/* Post Stats */}
         <div className="post-stats">
           <div className="post-stats-left">
-            <Space>
-              {isFavorite(post.id) ? <LikeFilled className="like-icon liked" /> : <LikeOutlined className="like-icon" />}
-              <Text>{favoriteCounts[post.id] || 0} lượt thích</Text>
-            </Space>
+          <Text type="secondary">
+          <LikeOutlined style={{ color: isFavorite(post.id) ? '#1877f2' : 'inherit' }} /> {favoriteCounts[post.id] || 0}
+        </Text>
           </div>
           <div className="post-stats-right">
             <Text type="secondary">
-              {commentTree.length} bình luận · {post.shares || 0} lượt chia sẻ
+              {commentCounts[post.id] || 0} bình luận · {post.shares || 0} lượt chia sẻ
             </Text>
           </div>
         </div>
@@ -200,14 +259,20 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
 
         {/* Action Buttons */}
         <div className="post-actions">
-          <Button
-            type="text"
-            icon={isFavorite(post.id) ? <LikeFilled /> : <LikeOutlined />}
-            className={`action-btn like-btn ${isFavorite(post.id) ? 'liked' : ''}`}
-            onClick={() => handleLike(post.id)}
-          >
-            Thích
-          </Button>
+        <Button
+          type="text"
+          icon={isLikeLoading ? <LoadingOutlined /> : <LikeOutlined />}
+          style={{
+            flex: 1,
+            color: isFavorite(post.id) ? '#1877f2' : 'inherit',
+            fontWeight: isFavorite(post.id) ? 'bold' : 'normal'
+          }}
+          onClick={() => handleLike(post.id)}
+          loading={isLikeLoading}
+          disabled={isLikeLoading}
+        >
+          Thích
+        </Button>
           <Button
             type="text"
             icon={<CommentOutlined />}
@@ -229,16 +294,31 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
         {/* Comments Section */}
         <div className="comments-section">
           <div className="comments-header">
-            <Title level={5}>Bình luận ({commentTree.length})</Title>
+            <Title level={5}>Bình luận ({commentCounts[post.id] || 0})</Title>
           </div>
 
            {/* Comment Form */}
            <div className="comment-form-container">
             <CommentForm
-              postId={post.id}
-              onSubmit={handleCommentSubmit}
-              loading={submitting}
+              parentId={undefined}
               placeholder="Viết bình luận..."
+              onCancel={() => {}}
+              loading={submitting}
+              compact={false}
+              autoFocus={false}
+              handleImageSelect={handleImageSelect}
+              handleRemoveImage={handleRemoveImage}
+              previewImages={previewImages}
+              selectedImages={selectedImages}
+              uploadFileList={uploadFileList}
+              handleCommentSubmit={(data) => {
+                // Cập nhật postid từ post hiện tại
+                const updatedData = {
+                  ...data,
+                  postid: post.id
+                };
+                handleCommentSubmit(updatedData);
+              }}
             />
           </div>
 
@@ -252,9 +332,14 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
             ) : commentTree.length > 0 ? (
               <CommentList
                 comments={commentTree}
-                onReply={handleCommentReply}
                 items={items}
                 currentUserId={currentUserId}
+                handleCommentReply={handleCommentReply}
+                handleImageSelect={handleImageSelect}
+                handleRemoveImage={handleRemoveImage}
+                previewImages={previewImages}
+                selectedImages={selectedImages}
+                uploadFileList={uploadFileList}
               />
             ) : (
               <Empty

@@ -4,21 +4,33 @@ import type { Comment } from '../../../interface/Comment';
 import CommentItem from './CommentItem';
 import './CommentList.css';
 import type { UserResponse } from '../../../interface/UserResponse';
+import type { UploadChangeParam } from 'antd/es/upload';
+import type { UploadFile } from 'antd';
 
 interface CommentListProps {
   comments: Comment[];
-  onReply: (commentId: number, content: string) => void;
   items: UserResponse[];
   currentUserId?: number;
   maxLevel?: number;
+  handleCommentReply: (commentId: number, content: string) => void;
+  handleImageSelect?: (info: UploadChangeParam<UploadFile>) => void;
+  handleRemoveImage?: (index: number) => void;
+  previewImages?: string[];
+  selectedImages?: File[];
+  uploadFileList?: UploadFile[];
 }
 
 const CommentList: React.FC<CommentListProps> = ({
   comments,
-  onReply,
   items,
   currentUserId,
-  maxLevel = 3
+  maxLevel = 3,
+  handleCommentReply,
+  handleImageSelect,
+  handleRemoveImage,
+  previewImages,
+  selectedImages,
+  uploadFileList,
 }) => {
   // Flatten nested comments for rendering
   const flattenComments = (comments: Comment[], level: number = 0): Comment[] => {
@@ -54,10 +66,15 @@ const CommentList: React.FC<CommentListProps> = ({
           key={comment.id}
           comment={comment}
           level={comment.level || 0}
-          onReply={onReply}
           items={items}
           currentUserId={currentUserId}
           maxLevel={maxLevel}
+          handleCommentReply={handleCommentReply}
+          handleImageSelect={handleImageSelect}
+          handleRemoveImage={handleRemoveImage}
+          previewImages={previewImages}
+          selectedImages={selectedImages}
+          uploadFileList={uploadFileList}
         />
       )}
     />

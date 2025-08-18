@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from './index';
 import { getPosts } from '../features/post/postThunks';
 import { getPostImages } from '../features/postImg/postImgThunks';
-import type { Post as PostType, FriendShip } from '../interface/UserResponse';
+import type { Post as PostType } from '../interface/UserResponse';
 
 export interface PostUI extends PostType {
   likes?: number;
@@ -27,7 +27,7 @@ interface UsePostDataReturn {
 
 export const usePostData = (
   currentUserId: number | undefined,
-  contacts: FriendShip[]
+  contactIds: number[]
 ): UsePostDataReturn => {
   const dispatch = useAppDispatch();
   const posts = useAppSelector((state) => state.post.items);
@@ -44,24 +44,19 @@ export const usePostData = (
   const getFilteredPosts = useCallback(() => {
     if (!currentUserId) return [];
 
-    // Get friend IDs - convert sentat string to number
-    const friendIds = contacts.map(item => {
-      const friendId = item.userid === currentUserId ? Number(item.sentat) : item.userid;
-      return friendId;
-    }).filter(id => id !== currentUserId && !isNaN(id)); // Remove current user and invalid numbers
-    
+    // Filter out current user from contact IDs
+    const friendIds = contactIds.filter(id => id !== currentUserId && !isNaN(id));  
     const allUserIds = [...friendIds, currentUserId];
-
     // Filter posts from friends and current user
     const filteredPosts = posts.filter(item => {
-      return allUserIds.includes(item.userid) && item.status === 1;
+      return allUserIds.map(id => id == item.userid) && item.status === 1;
     });
 
     // Sort by creation date (newest first)
     return filteredPosts.sort((a, b) =>
       new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
     );
-  }, [currentUserId, posts, contacts]);
+  }, [currentUserId, posts, contactIds]);
 
   // Batch load post images with caching
   const loadPostImages = useCallback(async (postsToLoad: PostUI[], forceReload = false) => {

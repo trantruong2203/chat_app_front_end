@@ -1,4 +1,4 @@
-import { Divider, List, Avatar, Badge, Typography, Input } from 'antd';
+import { Divider, List, Avatar, Typography, Input } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useState } from 'react';
 import { getObjectById } from '../../services/respone';
@@ -17,7 +17,6 @@ const ListGroups: React.FC = () => {
     const [groups, setGroups] = useState<ChatGroup[]>([]);
     const groupMembers = useSelector((state: RootState) => state.groupMember.items);
     const navigate = useNavigate();
-
 
     useEffect(() => {
         const getGroup = () => {
@@ -41,7 +40,7 @@ const ListGroups: React.FC = () => {
       navigate(`/group/${group.id}`);   
     };
 
-    
+   
 
     return (
         <div
@@ -95,17 +94,11 @@ const ListGroups: React.FC = () => {
             >
               <List.Item.Meta
                 avatar={
-                  <Badge
-                    dot
-                    color={item.status === 1 ? 'green' : 'gray'}
-                    offset={[-5, 40]}
-                  >
                     <Avatar
                       src={item.avatar ?? ''}
                       size={50}
                       style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
                     />
-                  </Badge>
                 }
                 title={<Typography.Text strong style={{fontSize: '18px'}}>{item.name ?? '---'}</Typography.Text>}
               />

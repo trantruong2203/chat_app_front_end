@@ -20,6 +20,7 @@ export const mapBackendCommentToFrontend = (backendComment: BackendComment): Com
   return {
     id: backendComment.id,
     postId: backendComment.postid,
+    postid: backendComment.postid,
     userId: backendComment.userid,
     parentId: backendComment.commentid,
     content: backendComment.content,
@@ -29,7 +30,8 @@ export const mapBackendCommentToFrontend = (backendComment: BackendComment): Com
     favoriteCount: 0,
     isFavorite: false,
     replies: [],
-    level: 0
+    level: 0,
+    imgUrl: backendComment.imgurl
   };
 };
 

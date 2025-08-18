@@ -16,39 +16,38 @@ import PostCard from '../../components/post/PostCard';
 import NewsSidebar from '../../components/post/NewsSidebar';
 import ContactsSidebar from '../../components/post/ContactsSidebar';
 import CreatePostSection from '../../components/post/CreatePostSection';
-import PostTabs from '../../components/post/PostTabs';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { PostSkeleton } from '../../components/Loading';
 import { toast } from 'react-toastify';
-import type { Post } from '../../interface/UserResponse';
+import type { Post as PostModel } from '../../interface/UserResponse';
+import { useCommentCounts } from '../../hooks/useCommentCounts';
 
 const { Content } = Layout;
 
 const Post: React.FC = () => {
   // Basic state
   const [newPostContent, setNewPostContent] = useState('');
-  const [activeTab, setActiveTab] = useState('foryou');
   const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [postDetailModalVisible, setPostDetailModalVisible] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [selectedPost, setSelectedPost] = useState<PostModel | null>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
 
   // Get current user info
-  const accountLogin = useContext(ContextAuth);
-  const { items: users } = useAppSelector((state) => state.user);
-  const currentUserId = getObjectById(users, accountLogin?.accountLogin?.email ?? '')?.id;
+  const { accountLogin } = useContext(ContextAuth);
+  const { items } = useAppSelector((state) => state.user);
+  const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
 
   // Custom hooks for data management
-  const { contacts } = useContacts(currentUserId);
+  const { contacts} = useContacts(currentUserId);
   const { allPosts, postImagesMap, loading: postsLoading, error: postsError } = usePostData(currentUserId, contacts);
-  const { favoriteCounts, isFavorite, handleLike} = useFavorites(currentUserId, allPosts.map(p => p.id));
+  const { favoriteCounts, isFavorite, handleLike, isPostLoading} = useFavorites(currentUserId, allPosts.map(p => p.id));
+  const { commentCounts, refreshPostCount } = useCommentCounts(allPosts.map(p => p.id));
   const { newsArticles, loading: newsLoading, error: newsError, refreshNews } = useNewsData();
 
   // Event handlers
-  const handleOpenPostDetail = (post: Post) => {
+  const handleOpenPostDetail = (post: PostModel) => {
     setSelectedPost(post);
     setPostDetailModalVisible(true);
   };
@@ -58,70 +57,48 @@ const Post: React.FC = () => {
     setSelectedPost(null);
   };
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
-
   // Early return if no user logged in
   if (!currentUserId) {
     return (
-      <Layout style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+      <Layout style={{ minHeight: '100vh', backgroundColor: 'var(--yahoo-bg-secondary)' }}>
         <Content style={{ padding: '50px', textAlign: 'center' }}>
-          <h2>Vui lòng đăng nhập để xem bài viết</h2>
+          <h2 style={{ color: 'var(--yahoo-text)' }}>Vui lòng đăng nhập để xem bài viết</h2>
         </Content>
       </Layout>
     );
   }
 
-  // Upload props for create post
-  const uploadProps = {
-    beforeUpload: (file: File) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          setPreviewImages([reader.result as string]);
-          setSelectedImages([file]);
-          setOpen(true);
-        }
-      };
-      reader.onerror = () => {
-        toast.error('Lỗi khi đọc file ảnh');
-      };
-      reader.readAsDataURL(file);
-      return false;
-    },
-  };
+    const handleImageSelect = (info: UploadChangeParam<UploadFile>) => {
+      const { fileList } = info;
+      const validFiles = fileList.filter((file: UploadFile) => file.status !== 'error' && file.originFileObj instanceof File);
 
-  const handleImageSelect = (info: UploadChangeParam<UploadFile>) => {
-    const { fileList } = info;
-    const validFiles = fileList.filter((file: UploadFile) => file.status !== 'error' && file.originFileObj instanceof File);
+      setUploadFileList(validFiles);
+      const validFileObjects = validFiles.map((file: UploadFile) => file.originFileObj as File);
+      setSelectedImages(validFileObjects);
 
-    setUploadFileList(validFiles);
-    const validFileObjects = validFiles.map((file: UploadFile) => file.originFileObj as File);
-    setSelectedImages(validFileObjects);
-
-    const newPreviewImages: string[] = [];
-    validFileObjects.forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        newPreviewImages.push(e.target?.result as string);
-        if (newPreviewImages.length === validFileObjects.length) {
-          setPreviewImages([...newPreviewImages]);
-        }
-      };
-      reader.onerror = () => {
-        toast.error('Lỗi khi đọc file ảnh');
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+      const newPreviewImages: string[] = [];
+      validFileObjects.forEach((file: File) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newPreviewImages.push(e.target?.result as string);
+          if (newPreviewImages.length === validFileObjects.length) {
+            setPreviewImages([...newPreviewImages]);
+          }
+        };
+        reader.onerror = () => {
+          toast.error('Lỗi khi đọc file ảnh');
+        };
+        reader.readAsDataURL(file);
+      });
+      setOpen(true);
+    };
 
   return (
     <ErrorBoundary>
-      <Layout style={{ minHeight: '100vh', backgroundColor: '#f0f2f5', overflow: 'scroll' }}>
+      <Layout style={{ minHeight: '100vh', backgroundColor: 'var(--yahoo-bg-secondary)', overflow: 'scroll' }}>
         <Layout>
           {/* News Sidebar */}
-          <ErrorBoundary fallback={<div style={{ width: 380, padding: 20 }}>Không thể tải tin tức</div>}>
+          <ErrorBoundary fallback={<div style={{ width: 380, padding: 20, background: 'var(--yahoo-bg)' }}>Không thể tải tin tức</div>}>
             <NewsSidebar
               newsArticles={newsArticles}
               loading={newsLoading}
@@ -131,20 +108,15 @@ const Post: React.FC = () => {
           </ErrorBoundary>
 
           {/* Main Content */}
-          <Layout style={{ padding: '20px', marginLeft: 380, marginRight: 300, marginTop: 0 }}>
+          <Layout style={{ padding: '24px', marginLeft: 380, marginRight: 300, marginTop: 0 }}>
             <Content>
               {/* Create Post Section */}
               <CreatePostSection
-                users={users}
+                users={items}
                 currentUserId={currentUserId}
                 onCreatePost={() => setOpen(true)}
-                uploadProps={uploadProps}
-              />
-
-              {/* Post Tabs */}
-              <PostTabs
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
+                handleImageSelect={handleImageSelect}
+                uploadFileList={uploadFileList}
               />
 
               {/* Posts List with Loading and Error States */}
@@ -156,24 +128,35 @@ const Post: React.FC = () => {
                   description={postsError}
                   type="error"
                   showIcon
-                  style={{ marginBottom: 20 }}
+                  style={{ marginBottom: 20, borderRadius: '8px' }}
                 />
               ) : allPosts.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '50px 0' }}>
-                  <h3>Chưa có bài viết nào</h3>
-                  <p>Hãy tạo bài viết đầu tiên của bạn!</p>
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: '60px 0',
+                  background: 'var(--yahoo-bg)',
+                  borderRadius: '12px',
+                  marginTop: '20px'
+                }}>
+                  <h3 style={{ color: 'var(--yahoo-text)', marginBottom: '8px' }}>Chưa có bài viết nào</h3>
+                  <p style={{ color: 'var(--yahoo-text-secondary)' }}>Hãy tạo bài viết đầu tiên của bạn!</p>
                 </div>
               ) : (
                 allPosts.map((post) => (
-                  <ErrorBoundary key={post.id} fallback={<div>Lỗi hiển thị bài viết</div>}>
+                  <ErrorBoundary key={post.id} fallback={<div style={{ background: 'var(--yahoo-bg)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>Lỗi hiển thị bài viết</div>}>
                     <PostCard
                       post={post}
                       postImages={postImagesMap[post.id] || []}
-                      users={users}
-                      favoriteCounts={favoriteCounts}
+                      users={items}
+                      favoriteCounts={Object.fromEntries(
+                        Object.entries(favoriteCounts).map(([key, value]) => [key, value ?? 0])
+                      )}
                       isFavorite={isFavorite}
                       onLike={handleLike}
                       onComment={handleOpenPostDetail}
+                      commentCount={commentCounts[post.id] || 0}
+                      refreshPostCount={refreshPostCount}
+                      isLikeLoading={isPostLoading(post.id)}
                     />
                   </ErrorBoundary>
                 ))
@@ -182,11 +165,10 @@ const Post: React.FC = () => {
           </Layout>
 
           {/* Contacts Sidebar */}
-          <ErrorBoundary fallback={<div style={{ width: 300, padding: 20 }}>Không thể tải danh bạ</div>}>
+          <ErrorBoundary fallback={<div style={{ width: 300, padding: 20, background: 'var(--yahoo-bg)' }}>Không thể tải danh bạ</div>}>
             <ContactsSidebar
               contacts={contacts}
-              users={users}
-              currentUserId={currentUserId}
+              users={items}
             />
           </ErrorBoundary>
         </Layout>
@@ -195,8 +177,6 @@ const Post: React.FC = () => {
         <CreatPostModal
           open={open}
           setOpen={setOpen}
-          confirmLoading={confirmLoading}
-          setConfirmLoading={setConfirmLoading}
           setNewPostContent={setNewPostContent}
           newPostContent={newPostContent}
           selectedImages={selectedImages}
@@ -212,10 +192,15 @@ const Post: React.FC = () => {
           onClose={handleClosePostDetail}
           post={selectedPost}
           postImages={selectedPost ? postImagesMap[selectedPost.id] || [] : []}
-          favoriteCounts={favoriteCounts}
+          favoriteCounts={Object.fromEntries(
+            Object.entries(favoriteCounts).map(([key, value]) => [key, value ?? 0])
+          )}
           handleLike={handleLike}
           isFavorite={isFavorite}
           currentUserId={currentUserId}
+          isLikeLoading={selectedPost ? isPostLoading(selectedPost.id) : false}
+          refreshPostCount={refreshPostCount}
+          commentCounts={commentCounts}
         />
       </Layout>
     </ErrorBoundary>

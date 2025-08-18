@@ -26,7 +26,6 @@ function Contacts() {
         agreement: false,
         status: 0,
     });
-
     const handleCancel = (): void => {
         setIsAddFriendModalOpen(false);
     };
@@ -39,16 +38,19 @@ function Contacts() {
         setIsNotFriendModalOpen(false);
     };
 
-
-
     return (
         <>
-            <Layout style={{ height: '100vh', overflow: 'hidden' }}>
-                <Layout style={{ display: 'flex', flexDirection: 'row', height: '100%', backgroundColor: '#fff' }}>
-                    <div style={{ height: '100%', width: "300px" }}>
-                        <MenuContacts setIsAddFriendModalOpen={setIsAddFriendModalOpen} setIsAddGroupModalOpen={setIsAddGroupModalOpen} />
+            <Layout style={{ height: '100vh', overflow: 'hidden', background: 'var(--yahoo-bg-secondary)' }}>
+                <Layout style={{ display: 'flex', flexDirection: 'row', height: '100%', backgroundColor: 'var(--yahoo-bg)' }}>
+                    <div style={{ height: '100%', width: "320px", background: 'var(--yahoo-bg)', borderRight: '1px solid var(--yahoo-border)' }}>
+                        <MenuContacts 
+                        setIsAddFriendModalOpen={setIsAddFriendModalOpen} 
+                        setIsAddGroupModalOpen={setIsAddGroupModalOpen} 
+                        />
                     </div>
-                    <Outlet />
+                    <div style={{ flex: 1, background: 'var(--yahoo-bg-secondary)' }}>
+                        <Outlet />
+                    </div>
                 </Layout>
             </Layout>
 

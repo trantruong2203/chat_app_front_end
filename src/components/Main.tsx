@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Avatar, Layout, Input, Button, Space, Empty, Upload } from 'antd';
+import { Avatar, Layout, Input, Button, Space, Empty, Upload, Tooltip } from 'antd';
 import { UserOutlined, SendOutlined, SmileOutlined, PaperClipOutlined } from '@ant-design/icons';
 import HeadMain from './HeadMain';
 import { useSelector } from 'react-redux';
@@ -53,7 +53,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
         if (group) {
           setChatPartner({
             ...group,
-            username: group.name, // Chỉ hiển thị tên nhóm, không kèm số thành viên
+            username: group.name,
             email: '',
             password: '',
             confirm: '',
@@ -85,23 +85,26 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
   };
 
   return (
-    <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
+    <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg-secondary)' }}>
       {chatPartner && <HeadMain chatPartner={chatPartner} memberCount={memberCount} />}
 
       <Space
         direction="vertical"
         style={{
-          padding: '16px',
+          padding: '20px',
           flex: 1,
           overflowY: 'auto',
           width: '100%',
-          backgroundColor: '#EDEDED'
+          background: 'var(--yahoo-bg-secondary)'
         }}
         size={16}
       >
         {fullMessages.length === 0 ? (
-          <div style={{marginTop: '100px' }}>
-            <Empty description="Chọn một cuộc trò chuyện để bắt đầu" />
+          <div style={{marginTop: '100px', textAlign: 'center' }}>
+            <Empty 
+              description="Chọn một cuộc trò chuyện để bắt đầu" 
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
           </div>
         ) : (
           <>
@@ -111,7 +114,8 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
                 <div key={index} style={{
                   display: 'flex',
                   justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
-                  marginBottom: '8px'
+                  marginBottom: '12px',
+                  alignItems: 'flex-end'
                 }}>
                   {!isCurrentUser && (
                     <Avatar
@@ -121,7 +125,11 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
                         getObjectByEmail(items, msg.senderid ?? '')?.avatar : 
                         chatPartner?.avatar
                       }
-                      style={{ backgroundColor: '#f0f0f0', marginRight: '10px' }}
+                      style={{ 
+                        backgroundColor: 'var(--yahoo-bg-secondary)', 
+                        marginRight: '10px',
+                        border: '2px solid var(--yahoo-border)'
+                      }}
                     />
                   )}
                   <div className={isCurrentUser ? "message-bubble-sent" : "message-bubble-received"}>
@@ -131,17 +139,17 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
 
                       </div>
                     ) : (
-                      <div style={{ fontSize: '12px', fontWeight: 'normal', color: '#999', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: '500', color: 'var(--yahoo-text-secondary)', marginBottom: '4px' }}>
                         {getObjectByEmail(items, msg.senderid ?? '')?.username}
                       </div>
                     )}
-                    <div style={{ padding: '0', margin: 0, fontSize: '14px' }}>
+                    <div style={{ padding: '0', margin: 0, fontSize: '14px', lineHeight: '1.4' }}>
                       {msg.content}
                     </div>
                     <div style={{
                       fontSize: '11px',
-                      color: isCurrentUser ? '#7BC76A' : '#999',
-                      marginTop: '4px',
+                      color: isCurrentUser ? 'rgba(255, 255, 255, 0.8)' : 'var(--yahoo-text-secondary)',
+                      marginTop: '6px',
                       textAlign: 'right'
                     }}>
                       {dayjs(msg.sentat).utcOffset(7).format('HH:mm')}
@@ -157,28 +165,44 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
 
       <div
         style={{
-          padding: '10px',
-          backgroundColor: '#F5F5F5',
-          borderTop: '1px solid var(--wechat-border)',
+          padding: '16px',
+          backgroundColor: 'var(--yahoo-bg)',
+          borderTop: '1px solid var(--yahoo-border)',
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          gap: '12px'
         }}
       >
-        <Space size={12} style={{ marginRight: '8px' }}>
-          <Button
-            type="text"
-            style={{ color: '#666', fontSize: '18px' }}
-            icon={<SmileOutlined />}
-            onClick={() => setIsEmojiPickerVisible(!isEmojiPickerVisible)}
-          />
-          <Upload>
+        <Space size={8}>
+          <Tooltip title="Biểu tượng cảm xúc">
             <Button
               type="text"
-              style={{ color: '#666', fontSize: '18px' }}
-              icon={<PaperClipOutlined />}
+              style={{ 
+                color: 'var(--yahoo-text-secondary)', 
+                fontSize: '18px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px'
+              }}
+              icon={<SmileOutlined />}
+              onClick={() => setIsEmojiPickerVisible(!isEmojiPickerVisible)}
             />
-          </Upload>
-
+          </Tooltip>
+          <Tooltip title="Đính kèm file">
+            <Upload>
+              <Button
+                type="text"
+                style={{ 
+                  color: 'var(--yahoo-text-secondary)', 
+                  fontSize: '18px',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '8px'
+                }}
+                icon={<PaperClipOutlined />}
+              />
+            </Upload>
+          </Tooltip>
         </Space>
 
         <Input
@@ -189,9 +213,11 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
           disabled={!handleMessageSelection}
           style={{
             flex: 1,
-            border: '1px solid #E5E5E5',
-            borderRadius: '4px',
-            backgroundColor: '#FFFFFF'
+            border: '1px solid var(--yahoo-border)',
+            borderRadius: '8px',
+            backgroundColor: 'var(--yahoo-bg)',
+            padding: '8px 12px',
+            fontSize: '14px'
           }}
         />
         <Button
@@ -200,9 +226,11 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
           onClick={handleSendMessage}
           disabled={!handleMessageSelection || !message.trim()}
           style={{
-            marginLeft: '8px',
-            background: '#07C160',
-            borderColor: '#07C160'
+            background: 'var(--yahoo-primary)',
+            borderColor: 'var(--yahoo-primary)',
+            borderRadius: '8px',
+            height: '40px',
+            padding: '0 16px'
           }}
         >
           Gửi
@@ -210,7 +238,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
       </div>
 
       {isEmojiPickerVisible && (
-        <div style={{ position: 'absolute', bottom: '60px', left: '10px' }}>
+        <div style={{ position: 'absolute', bottom: '80px', left: '16px', zIndex: 1000 }}>
           <EmojiPicker onSelect={handleEmojiSelect} setMessage={setMessage} />
         </div>
       )}

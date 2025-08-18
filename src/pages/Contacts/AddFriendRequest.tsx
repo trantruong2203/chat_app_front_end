@@ -54,6 +54,7 @@ const AddFriendRequest: React.FC = () => {
     
             await dispatch(sendMessageThunk(
                 {
+                    id: 0,
                     groupid: null,
                     senderid: friendShip?.userid ?? 0,
                     receiverid:  friendShip?.sentat ?? 0,

@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Modal, Input, Button, Upload, Image, type UploadFile } from 'antd';
 import type { UploadChangeParam } from 'antd/es/upload';
-import { PictureOutlined, SmileOutlined, GlobalOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PictureOutlined, SmileOutlined, GlobalOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
 import { getPostImages, sendPostImageThunk } from '../../features/postImg/postImgThunks';
 import { getPosts, sendPostThunk } from '../../features/post/postThunks';
 import type { Post as PostType } from '../../interface/UserResponse';
@@ -16,8 +16,6 @@ import { ContextAuth } from '../../contexts/AuthContext';
 interface CreatPostModalProps {
     open: boolean;
     setOpen: (open: boolean) => void;
-    confirmLoading: boolean;
-    setConfirmLoading: (confirmLoading: boolean) => void;
     setNewPostContent: (newPostContent: string) => void;
     newPostContent: string;
     selectedImages: File[];
@@ -32,8 +30,6 @@ interface CreatPostModalProps {
 const CreatPostModal: React.FC<CreatPostModalProps> = ({
     open,
     setOpen,
-    confirmLoading,
-    setConfirmLoading,
     setNewPostContent,
     newPostContent,
     selectedImages,
@@ -49,19 +45,7 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
     const dispatch = useDispatch<AppDispatch>();
     const { accountLogin } = useContext(ContextAuth);
     const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
-
-    const handleOk = () => {
-        setConfirmLoading(true);
-        handlePostSubmit();
-        setTimeout(() => {
-            setOpen(false);
-            setConfirmLoading(false);
-            setNewPostContent('');
-            setSelectedImages([]);
-            setPreviewImages([]);
-            setUploadFileList([]);
-        }, 2000);
-    };
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleCancel = () => {
         setOpen(false);
@@ -83,8 +67,9 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
     const handlePostSubmit = async () => {
         if (!newPostContent.trim() && selectedImages.length === 0) return;
 
+        setIsSubmitting(true);
+        
         try {
-            // Tạo bài viết trước
             const newPost = {
                 id: 0,
                 userid: currentUserId ?? 0,
@@ -92,55 +77,38 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
                 createdat: dayjs().format('YYYY-MM-DD HH:mm:ss'),
                 status: 1
             };
+            
             const postResult = await dispatch(sendPostThunk(newPost as PostType)).unwrap();
             const postId = postResult.data?.id || 0;
 
-            // Upload tất cả ảnh nếu có
             if (selectedImages.length > 0) {
                 const uploadPromises = selectedImages.map(async (image, index) => {
                     try {
                         const imageUrl = await uploadImageToCloudinary(image, 'post_images');
-                await dispatch(sendPostImageThunk({ postid: postId, imgurl: imageUrl })).unwrap();
-                        console.log(`Ảnh ${index + 1} đã được upload thành công`);
-                        return true; // Thành công
+                        await dispatch(sendPostImageThunk({ postid: postId, imgurl: imageUrl })).unwrap();
                     } catch (uploadError) {
                         console.error(`Lỗi khi upload ảnh ${index + 1}:`, uploadError);
-                        return false; // Thất bại
                     }
                 });
 
-                // Chờ tất cả ảnh upload xong và kiểm tra kết quả
-                const results = await Promise.allSettled(uploadPromises);
-                const successCount = results.filter(result => 
-                    result.status === 'fulfilled' && result.value === true
-                ).length;
-                
-                console.log(`Đã upload thành công ${successCount}/${selectedImages.length} ảnh`);
-                
-                // Đợi một chút để đảm bảo database đã cập nhật
-                if (successCount > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
+                await Promise.allSettled(uploadPromises);                
             }
-
-            // Reset form
+            setOpen(false);
             setNewPostContent('');
             setSelectedImages([]);
             setPreviewImages([]);
             setUploadFileList([]);
 
-            // Refresh data - đảm bảo load lại toàn bộ posts và images
             await dispatch(getPosts()).unwrap();
             
-            // Đợi thêm một chút rồi load lại images cho bài viết mới
             if (postId > 0) {
-                setTimeout(() => {
-                dispatch(getPostImages(postId));
-                }, 300);
+                await dispatch(getPostImages(postId)).unwrap();
             }
+            
         } catch (error) {
             console.error("Lỗi khi đăng bài viết:", error);
-            // Có thể thêm thông báo lỗi cho người dùng ở đây
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -150,8 +118,7 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
             <Modal
                 title="Tạo bài viết"
                 open={open}
-                onOk={handleOk}
-                confirmLoading={confirmLoading}
+                onOk={handlePostSubmit}
                 onCancel={handleCancel}
                 footer={null}
             >
@@ -163,7 +130,6 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
                     onChange={(e) => setNewPostContent(e.target.value)}
                 />
 
-                {/* Hiển thị ảnh đã chọn */}
                 {selectedImages.length > 0 && (
                     <div style={{ marginBottom: 16 }}>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -228,7 +194,6 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
                         <Button
                             type="primary"
                             disabled
-                            onClick={handleOk}
                             style={{
                                 borderRadius: '50px',
                                 width: '100%',
@@ -244,8 +209,8 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
                     ) : (
                         <Button
                             type="primary"
-                            onClick={handleOk}
-                            loading={confirmLoading}
+                            onClick={handlePostSubmit}
+                            disabled={isSubmitting}
                             style={{
                                 borderRadius: '50px',
                                 width: '100%',
@@ -257,7 +222,11 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
                                 alignItems: 'center',
                                 display: 'flex',
                                 marginTop: '10px',
-                            }}> Đăng bài viết </Button>
+                            }}
+                            icon={isSubmitting ? <LoadingOutlined /> : null}
+                        > 
+                            {isSubmitting ? 'Đang đăng bài viết...' : 'Đăng bài viết'}
+                        </Button>
                     )}
                 </div>
             </Modal>

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchAllUsers, login, register, updatePassword, updateUser } from "./userApi";
+import { fetchAllUsers, getUserOnline, login, register, updatePassword, updateUser } from "./userApi";
 import type { LoginRequest, LoginResponse, UserResponse } from "../../interface/UserResponse";
 import { AxiosError } from "axios";
 
@@ -93,3 +93,16 @@ export const updatePasswordThunk = createAsyncThunk<UserResponse, {email: string
   }
 );
 
+export const fetchUserOnlineThunk = createAsyncThunk<UserResponse[], void, { rejectValue: string }>(
+  'user/fetchUserOnline',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getUserOnline();
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.data) {
+        return rejectWithValue(err.response.data.message || 'Lỗi từ server');
+      }
+      return rejectWithValue('Lỗi không xác định');
+    }
+  }
+);

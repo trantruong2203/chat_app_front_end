@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from './index';
 import {
   countedFavoritePost,
@@ -11,50 +11,28 @@ import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
 
 interface UseFavoritesReturn {
-  favoriteCounts: { [postId: number]: number };
+  favoriteCounts: { [postId: number]: number | undefined };
   isFavorite: (postId: number) => boolean;
   handleLike: (postId: number) => Promise<void>;
-  loading: boolean;
-  error: string | null;
+  isLoading: boolean;
+  isPostLoading: (postId: number) => boolean;
 }
 
 export const useFavorites = (currentUserId: number | undefined, postIds: number[]): UseFavoritesReturn => {
   const dispatch = useAppDispatch();
   const favoritePosts = useAppSelector((state) => state.favoritePost.items);
-
   const [favoriteCounts, setFavoriteCounts] = useState<{ [postId: number]: number }>({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<{ [postId: number]: boolean }>({});
   
-  // Use useRef for timeout to avoid stale closure issues
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasLoadedInitialCounts = useRef(false);
-
-  // Memoized function to check if a post is favorited
   const isFavorite = useCallback((postId: number) => {
     if (!currentUserId) return false;
     return favoritePosts.some(item => item.postid === postId && item.userid === currentUserId);
   }, [favoritePosts, currentUserId]);
 
-  // Function to refresh count for a specific post
-  const refreshPostCount = useCallback(async (postId: number) => {
-    try {
-      const count = await dispatch(countedFavoritePost(postId)).unwrap();
-      setFavoriteCounts(prev => ({ ...prev, [postId]: count }));
-    } catch (error) {
-      console.error(`Error refreshing count for post ${postId}:`, error);
-    }
-  }, [dispatch]);
-
-  // Batch load favorite counts with debouncing
   const loadFavoriteCounts = useCallback(async (postIdsToLoad: number[]) => {
-    if (postIdsToLoad.length === 0 || !currentUserId) return;
-
-    setLoading(true);
-    setError(null);
+    if (postIdsToLoad.length === 0) return;
 
     try {
-      // Load counts in parallel instead of sequentially
       const countPromises = postIdsToLoad.map(async (postId) => {
         try {
           const count = await dispatch(countedFavoritePost(postId)).unwrap();
@@ -74,108 +52,99 @@ export const useFavorites = (currentUserId: number | undefined, postIds: number[
 
       setFavoriteCounts(prev => ({ ...prev, ...newCounts }));
     } catch (err) {
-      setError('Không thể tải số lượt thích');
       console.error('Error loading favorite counts:', err);
-    } finally {
-      setLoading(false);
     }
-  }, [dispatch, currentUserId]);
+  }, [dispatch]);
 
-  // Debounced version of loadFavoriteCounts using useRef
-  const debouncedLoadCounts = useCallback((postIdsToLoad: number[]) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      loadFavoriteCounts(postIdsToLoad);
-    }, 300);
-  }, [loadFavoriteCounts]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Load favorite counts when postIds change
+  // Load favorite counts for new post IDs
   useEffect(() => {
     const newPostIds = postIds.filter(id => !(id in favoriteCounts));
     if (newPostIds.length > 0) {
-      debouncedLoadCounts(newPostIds);
+      loadFavoriteCounts(newPostIds);
     }
-  }, [postIds, favoriteCounts, debouncedLoadCounts]);
+  }, [postIds, favoriteCounts, loadFavoriteCounts]);
 
-  // Load favorite counts immediately when postIds are available for the first time
+  // Load user's favorite posts when user changes
   useEffect(() => {
-    if (postIds.length > 0 && !hasLoadedInitialCounts.current) {
-      hasLoadedInitialCounts.current = true;
-      loadFavoriteCounts(postIds);
+    if (currentUserId) {
+      dispatch(getFavoritePosts());
     }
-  }, [postIds, loadFavoriteCounts]);
+  }, [dispatch, currentUserId]);
 
-  // Load favorite posts on mount
-  useEffect(() => {
-    dispatch(getFavoritePosts());
-  }, [dispatch]);
-
-  // Handle like/unlike with optimistic updates
   const handleLike = useCallback(async (postId: number) => {
     if (!currentUserId) {
       toast.error('Vui lòng đăng nhập để thích bài viết');
       return;
     }
 
+    // Prevent multiple clicks while processing
+    if (isLoading[postId]) {
+      return;
+    }
+
+    setIsLoading(prev => ({ ...prev, [postId]: true }));
+
     const isCurrentlyFavorite = isFavorite(postId);
     const currentCount = favoriteCounts[postId] || 0;
 
-    // Optimistic update
-    setFavoriteCounts(prev => ({
-      ...prev,
-      [postId]: isCurrentlyFavorite
-        ? Math.max(0, currentCount - 1)
-        : currentCount + 1
-    }));
-
-    const favoritePost: FavoritePost = {
-      id: 0,
-      userid: currentUserId,
-      postid: postId,
-      createdat: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-      iconid: null
-    };
-
     try {
       if (isCurrentlyFavorite) {
+        // Unlike: delete favorite post
         await dispatch(deletedFavoritePost({ postid: postId, userid: currentUserId })).unwrap();
+        
+        // Update count locally after successful deletion
+        setFavoriteCounts(prev => ({
+          ...prev,
+          [postId]: Math.max(0, currentCount - 1)
+        }));
       } else {
+        // Like: create favorite post
+        const favoritePost: FavoritePost = {
+          id: 0,
+          userid: currentUserId,
+          postid: postId,
+          createdat: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+          iconid: null
+        };
+
         await dispatch(createdFavoritePost(favoritePost)).unwrap();
+        
+        // Update count locally after successful creation
+        setFavoriteCounts(prev => ({
+          ...prev,
+          [postId]: currentCount + 1
+        }));
       }
 
-      // Refresh favorite posts and update count for this specific post
-      await Promise.all([
-        dispatch(getFavoritePosts()),
-        refreshPostCount(postId)
-      ]);
+      // Refresh favorite posts list to ensure consistency
+      await dispatch(getFavoritePosts());
+      
+      // Refresh count from server to ensure accuracy
+      const updatedCount = await dispatch(countedFavoritePost(postId)).unwrap();
+      setFavoriteCounts(prev => ({
+        ...prev,
+        [postId]: updatedCount
+      }));
+
     } catch (error) {
-      // Revert optimistic update on error
+      console.error('Error handling like:', error);
+      toast.error('Có lỗi xảy ra khi thích bài viết');
+      
+      // Revert count on error
       setFavoriteCounts(prev => ({
         ...prev,
         [postId]: currentCount
       }));
-
-      console.error('Error handling like:', error);
-      toast.error('Có lỗi xảy ra khi thích bài viết');
+    } finally {
+      setIsLoading(prev => ({ ...prev, [postId]: false }));
     }
-  }, [currentUserId, isFavorite, dispatch, favoriteCounts, refreshPostCount]);
+  }, [currentUserId, isFavorite, dispatch, favoriteCounts, isLoading]);
 
   return {
     favoriteCounts,
     isFavorite,
     handleLike,
-    loading,
-    error
+    isLoading: Object.values(isLoading).some(loading => loading),
+    isPostLoading: (postId: number) => isLoading[postId] || false,
   };
 };

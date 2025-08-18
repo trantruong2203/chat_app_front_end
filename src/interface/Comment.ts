@@ -1,3 +1,6 @@
+import type { UploadChangeParam } from "antd/es/upload";
+import type { UploadFile } from "antd";
+
 // Comment Interface Definitions
 export interface Comment {
   id: number;
@@ -12,6 +15,8 @@ export interface Comment {
   isFavorite?: boolean;
   replies?: Comment[]; // Nested replies
   level?: number; // Depth level for UI rendering (0 = root, 1 = first reply, etc.)
+  imgUrl?: string; // URL ảnh đính kèm bình luận (nếu có)
+  postid: number;
 }
 
 export interface CommentUser {
@@ -29,17 +34,17 @@ export interface CommentFormData {
   createdat: string;
   iconid: number;
   imgurl: string;
-  commentid: number;
+  commentid?: number;
 }
 
 export interface CommentCreateRequest {
   userid: number;
   postid: number;
   content: string;
+  createdat: string;
   iconid?: number;
   imgurl?: string;
   commentid?: number;
-  // Không cần createdat - backend tự tạo
 }
 
 
@@ -67,6 +72,9 @@ export interface PostDetailModalProps {
   handleLike: (postId: number) => void;
   isFavorite: (postId: number) => boolean;
   currentUserId?: number;
+  isLikeLoading?: boolean;
+  refreshPostCount: (postId: number) => Promise<void>;
+  commentCounts: { [postId: number]: number };
 }
 
 export interface CommentItemProps {
@@ -80,14 +88,18 @@ export interface CommentItemProps {
 }
 
 export interface CommentFormProps {
-  postId: number;
   parentId?: number | null;
   placeholder?: string;
-  onSubmit: (data: CommentFormData) => void;
   onCancel?: () => void;
   loading?: boolean;
   autoFocus?: boolean;
   compact?: boolean; // For reply forms
+  handleImageSelect?: (info: UploadChangeParam<UploadFile>) => void;
+  handleRemoveImage: (index: number) => void;
+  previewImages?: string[];
+  selectedImages?: File[];
+  uploadFileList?: UploadFile[];
+  handleCommentSubmit: (data: CommentFormData) => void;
 }
 
 // API Response interfaces

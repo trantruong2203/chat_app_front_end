@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppSelector } from './index';
-import type { FriendShip } from '../interface/UserResponse';
 
 interface UseContactsReturn {
-  contacts: FriendShip[];
+  contacts: number[];
   loading: boolean;
   error: string | null;
 }
@@ -11,7 +10,7 @@ interface UseContactsReturn {
 export const useContacts = (currentUserId: number | undefined): UseContactsReturn => {
   const friendShip = useAppSelector((state) => state.friendship.items);
 
-  const [contacts, setContacts] = useState<FriendShip[]>([]);
+  const [contacts, setContacts] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +27,11 @@ export const useContacts = (currentUserId: number | undefined): UseContactsRetur
         item.status === 0 
       );
 
-      return filteredFriendships;
+      const friendListId = filteredFriendships.map(item => 
+        item.userid == currentUserId ? item.sentat : item.userid
+      );
+
+      return friendListId;
     } catch (err) {
       setError('Không thể tải danh sách bạn bè');
       console.error('Error filtering friendships:', err);
@@ -40,10 +43,9 @@ export const useContacts = (currentUserId: number | undefined): UseContactsRetur
 
   // Update contacts when dependencies change
   useEffect(() => {
-    const filteredContacts = getFilteredFriendships();
-    setContacts(filteredContacts);
+    const friendListId = getFilteredFriendships();
+    setContacts(friendListId);
   }, [getFilteredFriendships]);
-
   return {
     contacts,
     loading,

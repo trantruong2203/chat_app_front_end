@@ -53,3 +53,10 @@ export const updatePassword = async (email: string, password: string): Promise<U
     });
     return res.data;
 };
+
+export const getUserOnline = async () => {
+    const res = await axios.get(`${API}/user/online-users`, {
+        withCredentials: true
+    });
+    return res.data;
+};

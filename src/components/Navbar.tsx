@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import type { MenuProps } from 'antd';
-import { Avatar, Layout, Menu } from 'antd';
+import { Avatar, Layout, Menu, Tooltip } from 'antd';
 import { 
   MessageOutlined, 
   UserOutlined,
@@ -14,10 +14,8 @@ import { getObjectById } from '../services/respone';
 import { useNavigate } from 'react-router-dom';
 import { setUser } from '../features/users/userSlice';
 
-
 type MenuItem = Required<MenuProps>['items'][number];
 const { Sider } = Layout;
-
 
 function getItem(
   label: React.ReactNode,
@@ -34,10 +32,10 @@ function getItem(
 }
 
 const itemsMenu: MenuItem[] = [
-  getItem('1', '1', <MessageOutlined />),
-  getItem('2', '2', <UserOutlined />),
-  getItem('3', '3', <AppstoreOutlined />),
-  getItem('4', '4', <SettingOutlined />),
+  getItem( '', '1', <MessageOutlined />),
+  getItem( '', '2', <UserOutlined />),
+  getItem( '', '3', <AppstoreOutlined />),
+  getItem( '', '4', <SettingOutlined />),
 ];
 
 const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void }> = ({ setIsUserModalOpen }) => {
@@ -66,10 +64,11 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
   return (
     <Sider
       className="app-navbar"
-      width={70}
+      width={80}
       style={{ 
-        borderRight: '1px solid var(--wechat-border)',
-        zIndex: 1000
+        borderRight: '1px solid var(--yahoo-border)',
+        zIndex: 1000,
+        background: 'var(--yahoo-primary)'
       }}
     >
       <div 
@@ -81,20 +80,24 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
           marginBottom: '20px'
         }}
       >
-        <Avatar
-          className="user-avatar"
-          style={{
-            backgroundColor: '#f5f5f5',
-            color: '#666',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '40px',
-            height: '40px',
-          }}
-          src={user?.avatar || null}
-          onClick={() => setIsUserModalOpen(true)}
-        />
+        <Tooltip title="Hồ sơ cá nhân" placement="right">
+          <Avatar
+            className="user-avatar"
+            style={{
+              backgroundColor: '#ffffff',
+              color: 'var(--yahoo-primary)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '45px',
+              height: '45px',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              cursor: 'pointer'
+            }}
+            src={user?.avatar || null}
+            onClick={() => setIsUserModalOpen(true)}
+          />
+        </Tooltip>
       </div>
     
       <Menu
@@ -105,7 +108,8 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
         onClick={onMenuClick}
         style={{ 
           borderRight: 0,
-          textAlign: 'center'
+          textAlign: 'center',
+          background: 'transparent'
         }}
       />
       
