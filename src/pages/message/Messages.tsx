@@ -221,7 +221,6 @@ function Messages() {
             };
 
          await dispatch(sendMessageThunk(newMessage)).unwrap();
-         socket?.emit('sendMessage', newMessage);
             setMessageContent('');
             const filteredMessages = messages.filter(message =>
                 (message.senderid === currentUserId && message.receiverid === chatPartnerId) ||
