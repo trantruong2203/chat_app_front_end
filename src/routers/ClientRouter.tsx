@@ -7,7 +7,6 @@ import ListContacts from '../pages/Contacts/ListContacts';
 import AddGroupRequest from '../pages/Contacts/AddGroupRequest';
 import Messages from '../pages/message/Messages';
 import Post from '../pages/post/Post';
-import ChatDemoPage from '../pages/ChatDemoPage';
 
 interface CustomRoute {
   path: string;
@@ -52,13 +51,8 @@ const router: CustomRoute[] = [
     element: (
       <Post />
     )
-  },
-  {
-    path: '/chat-demo',
-    element: (
-      <ChatDemoPage />
-    )
   }
+  
 ];
 
 // Recursive function to render both top-level and nested routes

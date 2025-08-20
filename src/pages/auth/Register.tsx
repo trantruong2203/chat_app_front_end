@@ -14,13 +14,13 @@ import {
   Card, 
   Typography, 
   Divider,
+  App,
 } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUser } from '../../features/users/userThunks';
 import type { UserResponse } from '../../interface/UserResponse';
 import type { AppDispatch, RootState } from '../../stores/store';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const { Title, Text } = Typography;
 
@@ -29,25 +29,27 @@ const Register: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { items } = useSelector((state : RootState) => state.user);
   const navigate = useNavigate();
+  const { message } = App.useApp(); 
   
 
   const onFinish = async (values: UserResponse) => {
     const emailExists : boolean = items.some((user : UserResponse) => user.email === values.email || user.phone === values.phone);
     if (emailExists) {
-      toast.error('Email hoặc số điện thoại đã được sử dụng!');
+      message.error('Email hoặc số điện thoại đã được sử dụng!');
       return;
     }
     try {
       const resultAction = await dispatch(createUser(values));
       if (createUser.fulfilled.match(resultAction)) {
-        toast.success('Đăng ký thành công!');
+        message.success('Đăng ký thành công!');
         navigate('/');
       } else {
         const err = (resultAction as { payload: string | undefined }).payload;
-        toast.error(err || 'Đăng ký thất bại');
+        message.error(err || 'Đăng ký thất bại');
       }
-    } catch (e) {
-      toast.error('Đăng ký thất bại');
+    } catch (error: unknown) {
+      const errorMessage = typeof error === 'string' ? error : 'Đăng ký thất bại! Bạn vui lòng kiểm tra lại thông tin đăng ký!';
+      message.error(errorMessage);
     }
   };
 

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Avatar, Layout, Input, Button, Space, Empty, Upload, Tooltip } from 'antd';
-import { UserOutlined, SendOutlined, SmileOutlined, PaperClipOutlined } from '@ant-design/icons';
+import { UserOutlined, SendOutlined, PaperClipOutlined } from '@ant-design/icons';
 import HeadMain from './HeadMain';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../stores/store';
@@ -8,7 +8,6 @@ import { getObjectById, getObjectByEmail } from '../services/respone';
 import { ContextAuth } from '../contexts/AuthContext';
 import type { Message, UserResponse, GroupMember } from '../interface/UserResponse';
 import dayjs from 'dayjs';
-import EmojiPicker from './EmojiPicker';
 
 const { Content } = Layout;
 
@@ -29,7 +28,6 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
   const [chatPartner, setChatPartner] = useState<UserResponse | null>(null);
   const [memberCount, setMemberCount] = useState<number>(0);
   const chatGroup = useSelector((state: RootState) => state.chatGroup.items);
-  const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
   
   
   const scrollToBottom = () => {
@@ -78,11 +76,6 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
         }
       }
   }, [fullMessages, currentUserId, items, groupMember, chatGroup]);
-
-  const handleEmojiSelect = (emoji: { native: string }) => {
-    setIsEmojiPickerVisible(false);
-    setMessage(message + emoji.native);
-  };
 
   return (
     <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg-secondary)' }}>
@@ -174,20 +167,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
         }}
       >
         <Space size={8}>
-          <Tooltip title="Biểu tượng cảm xúc">
-            <Button
-              type="text"
-              style={{ 
-                color: 'var(--yahoo-text-secondary)', 
-                fontSize: '18px',
-                width: '40px',
-                height: '40px',
-                borderRadius: '8px'
-              }}
-              icon={<SmileOutlined />}
-              onClick={() => setIsEmojiPickerVisible(!isEmojiPickerVisible)}
-            />
-          </Tooltip>
+          {/* Đã gỡ nút emoji */}
           <Tooltip title="Đính kèm file">
             <Upload>
               <Button
@@ -237,11 +217,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
         </Button>
       </div>
 
-      {isEmojiPickerVisible && (
-        <div style={{ position: 'absolute', bottom: '80px', left: '16px', zIndex: 1000 }}>
-          <EmojiPicker onSelect={handleEmojiSelect} setMessage={setMessage} />
-        </div>
-      )}
+      {/* Đã gỡ EmojiPicker */}
     </Content>
   );
 };

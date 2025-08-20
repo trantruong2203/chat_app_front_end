@@ -3,11 +3,10 @@ import { LockOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row, App } from 'antd';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../stores/store';
-import { loginUser, updateUserThunk } from '../../features/users/userThunks';
+import { loginUser } from '../../features/users/userThunks';
 import { Link, useNavigate } from 'react-router-dom';
-import type { LoginRequest, UserResponse } from '../../interface/UserResponse';
+import type { LoginRequest } from '../../interface/UserResponse';
 import { ContextAuth } from '../../contexts/AuthContext';
-import { setUser } from '../../features/users/userSlice';
 
 const { Title, Text } = Typography;
 
@@ -16,33 +15,16 @@ const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { getToken } = useContext(ContextAuth);
-   const { message } = App.useApp(); // ✅ lấy message từ context
+  const { message } = App.useApp(); 
 
   const onFinish = async (values: LoginRequest): Promise<void> => {
     try {
-      const user = await dispatch(loginUser(values));
-
-      if (user.error) {
-        message.error('Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!');
-        return;
-      }
+      await dispatch(loginUser(values)).unwrap();
       await getToken();
-      await dispatch(updateUserThunk({
-        email: user?.meta.arg.email || '', account: {
-          ...user,
-          status: 1
-        } as unknown as UserResponse
-      })).unwrap();
-      // Cập nhật state user với thông tin mới
-      if (user) {
-        setUser({
-          ...user,
-          status: 1
-        });
-      }
      message.success('Đăng nhập thành công!');
       navigate('/');
     } catch (error: unknown) {
+      message.error('Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!');
       console.error('Lỗi đăng nhập:', error);
     }
   };
