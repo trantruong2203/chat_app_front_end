@@ -31,15 +31,24 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   
 
-  const onFinish = (values: UserResponse) => {
+  const onFinish = async (values: UserResponse) => {
     const emailExists : boolean = items.some((user : UserResponse) => user.email === values.email || user.phone === values.phone);
     if (emailExists) {
       toast.error('Email hoặc số điện thoại đã được sử dụng!');
       return;
     }
-    dispatch(createUser(values));
-    toast.success('Đăng ký thành công!');
-    navigate('/');
+    try {
+      const resultAction = await dispatch(createUser(values));
+      if (createUser.fulfilled.match(resultAction)) {
+        toast.success('Đăng ký thành công!');
+        navigate('/');
+      } else {
+        const err = (resultAction as { payload: string | undefined }).payload;
+        toast.error(err || 'Đăng ký thất bại');
+      }
+    } catch (e) {
+      toast.error('Đăng ký thất bại');
+    }
   };
 
   return (
