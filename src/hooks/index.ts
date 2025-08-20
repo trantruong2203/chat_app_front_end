@@ -11,3 +11,4 @@ export { usePostData } from './usePostData';
 export { useFavorites } from './useFavorites';
 export { useNewsData } from './useNewsData';
 export { useContacts } from './useContacts';
+export { useResponsive, useTouchDevice, useMobileBrowser, useSafeArea, useViewport } from './useResponsive';

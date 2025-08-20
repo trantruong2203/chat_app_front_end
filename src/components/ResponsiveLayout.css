@@ -1,0 +1,459 @@
+/* Responsive Layout cho Mobile */
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.mobile-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--yahoo-primary);
+  border-top: 1px solid var(--yahoo-border);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 16px;
+}
+
+.mobile-navbar .ant-menu {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  height: 100% !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.mobile-navbar .ant-menu-item {
+  margin: 0 !important;
+  padding: 8px !important;
+  border-radius: 8px !important;
+  flex: 1 !important;
+  text-align: center !important;
+  max-width: 60px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  color: white !important;
+}
+
+.mobile-navbar .ant-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.mobile-navbar .ant-menu-item-selected {
+  background-color: white !important;
+  color: var(--yahoo-primary) !important;
+}
+
+.mobile-content {
+  flex: 1;
+  overflow: hidden;
+  margin-bottom: 60px;
+}
+
+.mobile-chat-list {
+  height: 100%;
+  overflow-y: auto;
+  background: var(--yahoo-bg);
+}
+
+.mobile-chat-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--yahoo-bg-secondary);
+}
+
+.mobile-chat-header {
+  padding: 12px 16px;
+  background: var(--yahoo-bg);
+  border-bottom: 1px solid var(--yahoo-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.mobile-chat-input {
+  padding: 12px 16px;
+  background: var(--yahoo-bg);
+  border-top: 1px solid var(--yahoo-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-chat-input .ant-input {
+  flex: 1;
+  height: 44px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+.mobile-chat-input .ant-btn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+}
+
+.mobile-search-bar {
+  padding: 12px 16px;
+  background: var(--yahoo-bg);
+  border-bottom: 1px solid var(--yahoo-border);
+}
+
+.mobile-search-bar .ant-input-search {
+  width: 100%;
+}
+
+.mobile-chat-item {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--yahoo-border);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-chat-item:hover {
+  background-color: var(--yahoo-bg-secondary);
+}
+
+.mobile-chat-item.selected {
+  background-color: var(--yahoo-bg-secondary);
+  border-left: 3px solid var(--yahoo-primary);
+}
+
+.mobile-chat-item .ant-avatar {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.mobile-chat-item .chat-info {
+  margin-left: 12px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.mobile-chat-item .chat-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--yahoo-text);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-chat-item .chat-message {
+  font-size: 13px;
+  color: var(--yahoo-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-chat-item .chat-time {
+  font-size: 11px;
+  color: var(--yahoo-text-secondary);
+  margin-left: 8px;
+}
+
+.mobile-message-bubble {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+}
+
+.mobile-message-sent {
+  background: var(--yahoo-primary);
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+  align-self: flex-end;
+}
+
+.mobile-message-received {
+  background: white;
+  color: var(--yahoo-text);
+  border-radius: 18px 18px 18px 4px;
+  border: 1px solid var(--yahoo-border);
+  align-self: flex-start;
+}
+
+.mobile-message-time {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.mobile-message-sender {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--yahoo-text-secondary);
+  margin-bottom: 4px;
+}
+
+/* Mobile Modal Styles */
+.mobile-modal .ant-modal {
+  margin: 16px;
+  max-width: calc(100vw - 32px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.mobile-modal .ant-modal-content {
+  border-radius: 12px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.mobile-modal .ant-modal-header {
+  border-radius: 12px 12px 0 0;
+  padding: 16px 20px;
+}
+
+.mobile-modal .ant-modal-body {
+  padding: 20px;
+}
+
+.mobile-modal .ant-modal-footer {
+  border-radius: 0 0 12px 12px;
+  padding: 16px 20px;
+}
+
+/* Mobile Form Styles */
+.mobile-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.mobile-form .ant-input,
+.mobile-form .ant-select-selector {
+  height: 44px;
+  font-size: 16px;
+}
+
+.mobile-form .ant-btn {
+  height: 44px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+/* Mobile Post Styles */
+.mobile-post-card {
+  margin: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-post-card .ant-card-body {
+  padding: 16px;
+}
+
+.mobile-post-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  border-top: 1px solid var(--yahoo-border);
+  margin-top: 12px;
+}
+
+.mobile-post-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--yahoo-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.mobile-post-action:hover {
+  color: var(--yahoo-primary);
+  background-color: var(--yahoo-bg-secondary);
+}
+
+/* Mobile Contact Styles */
+.mobile-contact-item {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--yahoo-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-contact-item .ant-avatar {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.mobile-contact-info {
+  flex: 1;
+}
+
+.mobile-contact-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--yahoo-text);
+  margin-bottom: 2px;
+}
+
+.mobile-contact-status {
+  font-size: 12px;
+  color: var(--yahoo-text-secondary);
+}
+
+/* Mobile Group Styles */
+.mobile-group-item {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--yahoo-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-group-item .ant-avatar {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.mobile-group-info {
+  flex: 1;
+}
+
+.mobile-group-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--yahoo-text);
+  margin-bottom: 2px;
+}
+
+.mobile-group-members {
+  font-size: 12px;
+  color: var(--yahoo-text-secondary);
+}
+
+/* Mobile Utility Classes */
+.mobile-hidden {
+  display: none !important;
+}
+
+.mobile-visible {
+  display: block !important;
+}
+
+.mobile-text-center {
+  text-align: center !important;
+}
+
+.mobile-text-left {
+  text-align: left !important;
+}
+
+.mobile-text-right {
+  text-align: right !important;
+}
+
+.mobile-full-width {
+  width: 100% !important;
+}
+
+.mobile-full-height {
+  height: 100% !important;
+}
+
+.mobile-no-margin {
+  margin: 0 !important;
+}
+
+.mobile-no-padding {
+  padding: 0 !important;
+}
+
+.mobile-border-radius {
+  border-radius: 8px !important;
+}
+
+.mobile-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mobile Animation Classes */
+.mobile-fade-in {
+  animation: mobileFadeIn 0.3s ease-in-out;
+}
+
+.mobile-slide-up {
+  animation: mobileSlideUp 0.3s ease-in-out;
+}
+
+.mobile-slide-down {
+  animation: mobileSlideDown 0.3s ease-in-out;
+}
+
+@keyframes mobileFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mobileSlideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes mobileSlideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Mobile Touch Optimizations */
+.mobile-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.mobile-touch-friendly {
+  padding: 12px;
+  margin: 4px;
+}
+
+.mobile-no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Mobile Status Bar */
+.mobile-status-bar {
+  height: 20px;
+  background: var(--yahoo-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+}
+
+/* Mobile Safe Area */
+.mobile-safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+} 

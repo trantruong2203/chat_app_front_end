@@ -78,7 +78,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
   }, [fullMessages, currentUserId, items, groupMember, chatGroup]);
 
   return (
-    <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg-secondary)' }}>
+    <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg-secondary)', minHeight: '100vh' }}>
       {chatPartner && <HeadMain chatPartner={chatPartner} memberCount={memberCount} />}
 
       <Space
@@ -88,7 +88,8 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
           flex: 1,
           overflowY: 'auto',
           width: '100%',
-          background: 'var(--yahoo-bg-secondary)'
+          background: 'var(--yahoo-bg-secondary)',
+          minHeight: 0
         }}
         size={16}
       >

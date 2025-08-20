@@ -1,4 +1,6 @@
 import './App.css'
+import './components/ResponsiveLayout.css'
+import './components/MobileComponents.css'
 import { useContext } from 'react';
 import { ContextAuth } from './contexts/AuthContext';
 import AuthRouter from './routers/AuthRouter';

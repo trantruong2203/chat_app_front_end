@@ -68,7 +68,8 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
       style={{ 
         borderRight: '1px solid var(--yahoo-border)',
         zIndex: 1000,
-        background: 'var(--yahoo-primary)'
+        background: 'var(--yahoo-primary)',
+        minWidth: '80px'
       }}
     >
       <div 

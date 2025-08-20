@@ -103,7 +103,8 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selected
             height: '100%',
             width: '320px',
             background: 'var(--yahoo-bg)',
-            borderRight: '1px solid var(--yahoo-border)'
+            borderRight: '1px solid var(--yahoo-border)',
+            minWidth: '280px'
         }}>
             <div style={{
                 display: 'flex',

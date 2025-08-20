@@ -2,6 +2,7 @@ import  { useState } from 'react';
 import ClientRouter from '../routers/ClientRouter';
 import { Layout } from 'antd';
 import Navbar from '../components/Navbar';
+import MobileNavbar from '../components/MobileNavbar';
 import UserModal from '../components/modal/UserModal';
 
 function Home() {
@@ -15,6 +16,7 @@ function Home() {
                     <ClientRouter />
                 </Layout>
             </Layout>
+            <MobileNavbar setIsUserModalOpen={setIsUserModalOpen} />
             <UserModal
                 isModalOpen={isUserModalOpen}
                 setIsModalOpen={setIsUserModalOpen}
