@@ -11,6 +11,8 @@ import { io, Socket } from 'socket.io-client';
 const { Search } = Input;
 const { Title, Text } = Typography;
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL;
+
 interface OnlineUser {
   userId: string;
   user: UserResponse;
@@ -77,7 +79,7 @@ const ListContacts: React.FC = () => {
 
   useEffect(() => {
     // Kết nối socket
-    const newSocket = io('http://localhost:3000', {
+    const newSocket = io(SOCKET_URL, {
       withCredentials: true
     });
 

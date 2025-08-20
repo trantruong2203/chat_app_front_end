@@ -5,6 +5,8 @@ import axios from 'axios';
 import type { UserResponse } from '../interface/UserResponse';
 import { useNavigate } from 'react-router-dom';
 
+const API = import.meta.env.VITE_API_URL;
+
 interface AuthProviderProps {
     children: ReactNode;
 }
@@ -19,7 +21,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     const getToken = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/user/me', {
+            const response = await axios.get(`${API}/user/me`, {
                 withCredentials: true
             });
             setAccountLogin(response.data.user);
@@ -31,7 +33,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
 
     const logout = async () => {
-        await axios.post('http://localhost:3000/user/logout', {}, {
+        await axios.post(`${API}/user/logout`, {}, {
             withCredentials: true,
         });
         setAccountLogin(null);

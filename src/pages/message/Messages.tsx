@@ -18,6 +18,8 @@ import dayjs from 'dayjs';
 import { fetchLastMessagesByUserIdThunk } from '../../features/messages/messageThunks';
 import { io, Socket } from 'socket.io-client';
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL;
+
 // Interface cho user online
 interface OnlineUser {
     userId: string;
@@ -87,7 +89,7 @@ function Messages() {
 
     useEffect(() => {
         // Kết nối socket
-        const newSocket = io('http://localhost:3000', {
+        const newSocket = io(SOCKET_URL, {
           withCredentials: true
         });
     
