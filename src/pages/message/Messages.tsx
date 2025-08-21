@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
 import Main from '../../components/Main';
 import RecentChats from '../../components/RecentChats';
+import MobileChatLayout from '../../components/MobileChatLayout';
 import AddFriendModal from '../../components/modal/AddFriendModal';
 import AddGroupModal from '../../components/modal/AddGroupModal';
 import NotFriendModal from '../../components/modal/NotFriendModal';
@@ -17,6 +18,7 @@ import { message } from 'antd';
 import dayjs from 'dayjs';
 import { fetchLastMessagesByUserIdThunk } from '../../features/messages/messageThunks';
 import { io, Socket } from 'socket.io-client';
+import { useResponsive } from '../../hooks/useResponsive';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL;
 
@@ -47,6 +49,7 @@ function Messages() {
     const userId = isGroupChat ? null : id;
     const groupId = isGroupChat ? id : null;
     const [handleLastMess, setHandleLastMess] = useState<Message | null>(null);
+    const { isMobile } = useResponsive();
 
     const [findUser, setFindUser] = useState<UserResponse>({
         id: 0,
@@ -263,6 +266,36 @@ function Messages() {
         }
     }, [userId, groupId, currentUserId, messages]);
 
+    // Nếu là mobile, sử dụng MobileChatLayout
+    if (isMobile) {
+        return (
+            <>
+                <MobileChatLayout
+                    socket={socket}
+                    onlineUsers={onlineUsers}
+                />
+
+                <AddFriendModal
+                    findUser={findUser}
+                    setFindUser={setFindUser}
+                    isModalOpen={isAddFriendModalOpen}
+                    handleCancel={handleCancel}
+                    handleOpenNotFriendModal={handleOpenNotFriendModal}
+                />
+                <AddGroupModal
+                    isOpen={isAddGroupModalOpen}
+                    onClose={() => setIsAddGroupModalOpen(false)}
+                />
+                <NotFriendModal
+                    isModalOpen={isNotFriendModalOpen}
+                    handleCancel={handleCancelNotFriend}
+                    findUser={findUser}
+                />
+            </>
+        );
+    }
+
+    // Nếu là desktop, sử dụng layout cũ
     return (
         <>
             <Layout style={{ height: '100vh', overflow: 'hidden', background: 'var(--yahoo-bg-secondary)' }}>

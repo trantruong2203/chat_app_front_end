@@ -16,7 +16,7 @@ function Home() {
                     <ClientRouter />
                 </Layout>
             </Layout>
-            <MobileNavbar setIsUserModalOpen={setIsUserModalOpen} />
+            <MobileNavbar />
             <UserModal
                 isModalOpen={isUserModalOpen}
                 setIsModalOpen={setIsUserModalOpen}
