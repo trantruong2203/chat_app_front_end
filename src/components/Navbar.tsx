@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import type { MenuProps } from 'antd';
-import { Avatar, Layout, Menu, Tooltip } from 'antd';
+import { Avatar, Layout, Menu, Tooltip, Divider } from 'antd';
 import { 
   MessageOutlined, 
   UserOutlined,
@@ -13,6 +13,7 @@ import { ContextAuth } from '../contexts/AuthContext';
 import { getObjectById } from '../services/respone';
 import { useNavigate } from 'react-router-dom';
 import { setUser } from '../features/users/userSlice';
+import ThemeToggle from './ThemeToggle';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const { Sider } = Layout;
@@ -113,6 +114,28 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
           background: 'transparent'
         }}
       />
+
+      <div style={{ 
+        position: 'absolute', 
+        bottom: '20px', 
+        left: '50%', 
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '12px'
+      }}>
+        <Divider style={{ 
+          margin: '0', 
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          width: '40px'
+        }} />
+        <ThemeToggle 
+          size="small" 
+          type="text" 
+          className="navbar-theme-toggle"
+        />
+      </div>
       
     </Sider >
   );

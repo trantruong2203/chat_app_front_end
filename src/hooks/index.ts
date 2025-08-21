@@ -12,3 +12,4 @@ export { useFavorites } from './useFavorites';
 export { useNewsData } from './useNewsData';
 export { useContacts } from './useContacts';
 export { useResponsive, useTouchDevice, useMobileBrowser, useSafeArea, useViewport } from './useResponsive';
+export { useTheme } from './useTheme';

@@ -56,6 +56,150 @@
   color: var(--yahoo-primary) !important;
 }
 
+/* Theme Toggle Styles */
+.theme-toggle {
+  color: white !important;
+  border: none !important;
+  background: transparent !important;
+  transition: all 0.3s ease !important;
+}
+
+.theme-toggle:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-theme-toggle {
+  color: white !important;
+}
+
+.mobile-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.mobile-navbar-theme-toggle {
+  color: white !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 4px !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+}
+
+.mobile-navbar-theme-toggle:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark Mode CSS Variables */
+:root {
+  --yahoo-bg: #ffffff;
+  --yahoo-bg-secondary: #f8f9fa;
+  --yahoo-text: #1a1a1a;
+  --yahoo-text-secondary: #666666;
+  --yahoo-border: #e1e5e9;
+  --yahoo-primary: #7206f7;
+  --yahoo-primary-hover: #5a05c7;
+  --yahoo-success: #52c41a;
+}
+
+/* Dark Mode Overrides */
+.dark {
+  --yahoo-bg: #1f1f1f;
+  --yahoo-bg-secondary: #2d2d2d;
+  --yahoo-text: #ffffff;
+  --yahoo-text-secondary: #b0b0b0;
+  --yahoo-border: #404040;
+}
+
+/* Dark Mode Specific Styles */
+.dark .mobile-chat-layout {
+  background: var(--yahoo-bg);
+}
+
+.dark .mobile-recent-chats {
+  background: var(--yahoo-bg);
+}
+
+.dark .mobile-search-header {
+  background: var(--yahoo-bg);
+  border-bottom-color: var(--yahoo-border);
+}
+
+.dark .mobile-chat-list {
+  background: var(--yahoo-bg);
+}
+
+.dark .mobile-chat-item {
+  border-bottom-color: var(--yahoo-border);
+}
+
+.dark .mobile-chat-item:hover {
+  background-color: var(--yahoo-bg-secondary);
+}
+
+.dark .mobile-chat-view {
+  background: var(--yahoo-bg-secondary);
+}
+
+.dark .mobile-chat-header {
+  background: var(--yahoo-bg);
+  border-bottom-color: var(--yahoo-border);
+}
+
+.dark .messages-container {
+  background: var(--yahoo-bg-secondary);
+}
+
+.dark .mobile-chat-input {
+  background: var(--yahoo-bg);
+  border-top-color: var(--yahoo-border);
+}
+
+.dark .mobile-message-bubble.received {
+  background: var(--yahoo-bg);
+  border-color: var(--yahoo-border);
+  color: var(--yahoo-text);
+}
+
+.dark .mobile-message-input {
+  background: var(--yahoo-bg);
+  border-color: var(--yahoo-border);
+  color: var(--yahoo-text);
+}
+
+.dark .mobile-message-input::placeholder {
+  color: var(--yahoo-text-secondary);
+}
+
+/* Dark Mode Navbar */
+.dark .mobile-navbar {
+  background: var(--yahoo-primary);
+  border-top-color: var(--yahoo-border);
+}
+
+.dark .app-navbar {
+  background: var(--yahoo-primary);
+  border-right-color: var(--yahoo-border);
+}
+
+/* Dark Mode Menu Items */
+.dark .mobile-navbar-menu .ant-menu-item {
+  color: white !important;
+}
+
+.dark .mobile-navbar-menu .ant-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .mobile-navbar-menu .ant-menu-item-selected {
+  background-color: white !important;
+  color: var(--yahoo-primary) !important;
+}
+
 .mobile-content {
   flex: 1;
   overflow: hidden;

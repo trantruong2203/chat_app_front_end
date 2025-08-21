@@ -1,6 +1,6 @@
 import React from 'react';
 import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
+import { Menu, Divider } from 'antd';
 import { 
   MessageOutlined, 
   UserOutlined,
@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useResponsive } from '../hooks/useResponsive';
+import ThemeToggle from './ThemeToggle';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -58,6 +59,19 @@ const MobileNavbar: React.FC = () => {
         onClick={onMenuClick}
         className="mobile-navbar-menu"
       />
+      
+      <div className="mobile-theme-toggle">
+        <Divider style={{ 
+          margin: '0', 
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          height: '30px'
+        }} />
+        <ThemeToggle 
+          size="small" 
+          type="text" 
+          className="mobile-navbar-theme-toggle"
+        />
+      </div>
     </div>
   );
 };
