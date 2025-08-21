@@ -16,6 +16,8 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { message } from 'antd';
 import dayjs from 'dayjs';
+dayjs.locale('vi');
+
 import { fetchLastMessagesByUserIdThunk } from '../../features/messages/messageThunks';
 import { io, Socket } from 'socket.io-client';
 import { useResponsive } from '../../hooks/useResponsive';
@@ -103,7 +105,7 @@ function Messages() {
               content: msg.content || 'Tin nhắn không hợp lệ',
               senderid: msg.senderid || 0,
               receiverid: msg.receiverid || 0,
-              sentat: msg.sentat || dayjs().format('YYYY-MM-DD HH:mm:ss'),
+              sentat: msg.sentat || dayjs().locale('vi').format('YYYY-MM-DD HH:mm:ss'),
               status: msg.status || 1,
               messageid: msg.messageid || 0,
               groupid: msg.groupid || 0,
@@ -117,7 +119,7 @@ function Messages() {
             content: data.content || 'Tin nhắn không hợp lệ',
             senderid: data.senderid || 0,
             receiverid: data.receiverid || 0,
-            sentat: data.sentat || dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            sentat: data.sentat || dayjs().locale('vi').format('YYYY-MM-DD HH:mm:ss'),
             status: data.status || 1,
             messageid: data.messageid || 0,
             groupid: data.groupid || 0,
@@ -197,7 +199,7 @@ function Messages() {
             content: handleLastMess?.content || '',
             senderid: currentUserId,
             receiverid: chatPartnerId ?? null,
-            sentat: handleLastMess?.sentat || dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            sentat: handleLastMess?.sentat || dayjs().locale('vi').format('YYYY-MM-DD HH:mm:ss'),
             status: handleLastMess?.status || 1,
             messageid: handleLastMess?.messageid || 0,
             groupid: chatGroupId ?? null
@@ -218,7 +220,7 @@ function Messages() {
                 senderid: currentUserId,
                 receiverid: chatPartnerId || null,
                 content: messageContent,
-                sentat: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+                sentat: dayjs().locale('vi').format('YYYY-MM-DD HH:mm:ss'),
                 status: 1,
                 messageid: 0
             };
@@ -318,6 +320,7 @@ function Messages() {
                         fullMessages={fullMessages}
                         handleMessageSelection={handleMessageSelection}
                         groupMember={groupMember}
+                        onlineUsers={onlineUsers}
                     />
                 </Layout>
             </Layout>

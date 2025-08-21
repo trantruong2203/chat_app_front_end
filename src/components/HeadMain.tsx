@@ -5,12 +5,24 @@ import type { UserResponse } from '../interface/UserResponse';
 
 const { Title } = Typography;
 
+interface OnlineUser {
+  userId: string;
+  user: UserResponse;
+}
+
 interface HeadMainProps {
   chatPartner?: UserResponse | null;
   memberCount?: number;
+  onlineUsers: OnlineUser[];
 }
 
-const HeadMain: React.FC<HeadMainProps> = ({ chatPartner, memberCount }) => {
+const HeadMain: React.FC<HeadMainProps> = ({ chatPartner, memberCount, onlineUsers }) => {
+
+  const isUserOnline = (user: UserResponse | null | undefined): boolean => {
+    if (!user) return false;
+    return onlineUsers.some(onlineUser => onlineUser.userId === user.id.toString());
+  };
+
   return (
     <div style={{
       display: 'flex',
@@ -44,7 +56,11 @@ const HeadMain: React.FC<HeadMainProps> = ({ chatPartner, memberCount }) => {
             color: 'var(--yahoo-text-secondary)',
             marginTop: '2px'
           }}>
-            {memberCount && memberCount > 0 ? `Nhóm • ${memberCount} thành viên` : chatPartner?.email || ''}
+            {memberCount && memberCount > 0 ? `Nhóm • ${memberCount} thành viên` : 
+               <div className="mobile-chat-status">
+               {isUserOnline(chatPartner) ? 'Đang hoạt động' : 'Không hoạt động'}
+             </div>
+             }
           </div>
         </div>
       </div>

@@ -168,19 +168,22 @@ function RecentChats({ setIsAddFriendModalOpen, setIsAddGroupModalOpen, selected
                     let isSelected = false;
                     
                     if (selectedMessage) {
-                        if (message.groupid) {
-                            isSelected = selectedMessage.groupid === message.groupid;
-                        } else {
-                            const getConversationKey = (msg: Message) => {
+                        // Tạo key duy nhất cho cả group chat và personal chat
+                        const getConversationKey = (msg: Message) => {
+                            if (msg.groupid) {
+                                // Đối với group chat, sử dụng groupid
+                                return `group-${msg.groupid}`;
+                            } else {
+                                // Đối với personal chat, tạo key từ sender và receiver
                                 const partnerId = msg.senderid === currentUserId ? msg.receiverid : msg.senderid;
-                                return `${currentUserId}-${partnerId}`;
-                            };
-                            
-                            const currentConversationKey = getConversationKey(message);
-                            const selectedConversationKey = getConversationKey(selectedMessage);
-                            
-                            isSelected = currentConversationKey === selectedConversationKey;
-                        }
+                                return `user-${currentUserId}-${partnerId}`;
+                            }
+                        };
+                        
+                        const currentConversationKey = getConversationKey(message);
+                        const selectedConversationKey = getConversationKey(selectedMessage);
+                        
+                        isSelected = currentConversationKey === selectedConversationKey;
                     }
 
                     const conversationKey = message.groupid 

@@ -11,6 +11,11 @@ import dayjs from 'dayjs';
 
 const { Content } = Layout;
 
+interface OnlineUser {
+  userId: string;
+  user: UserResponse;
+}
+
 interface MainProps {
   message: string;
   setMessage: (message: string) => void;
@@ -18,9 +23,10 @@ interface MainProps {
   handleMessageSelection: (message: Message) => void;
   fullMessages: Message[];
   groupMember: GroupMember[];
+  onlineUsers: OnlineUser[];
 }
 
-const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, fullMessages, handleMessageSelection, groupMember }) => {
+const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, fullMessages, handleMessageSelection, groupMember, onlineUsers }) => {
   const { items } = useSelector((state: RootState) => state.user);
   const { accountLogin } = useContext(ContextAuth);
   const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
@@ -79,7 +85,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
 
   return (
     <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg-secondary)', minHeight: '100vh' }}>
-      {chatPartner && <HeadMain chatPartner={chatPartner} memberCount={memberCount} />}
+      {chatPartner && <HeadMain chatPartner={chatPartner} memberCount={memberCount} onlineUsers={onlineUsers} />}
 
       <Space
         direction="vertical"
