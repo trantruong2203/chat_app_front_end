@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { LockOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Card, Typography, Divider, Row, App } from 'antd';
 import { useDispatch } from 'react-redux';
@@ -12,6 +12,7 @@ const { Title, Text } = Typography;
 
 const Login: React.FC = () => {
   const [form] = Form.useForm<LoginRequest>();
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { getToken } = useContext(ContextAuth);
@@ -19,13 +20,16 @@ const Login: React.FC = () => {
 
   const onFinish = async (values: LoginRequest): Promise<void> => {
     try {
+      setLoading(true);
       await dispatch(loginUser(values)).unwrap();
       await getToken();
-     message.success('Đăng nhập thành công!');
+      message.success('Đăng nhập thành công!');
       navigate('/');
     } catch (error: unknown) {
       message.error('Đăng nhập thất bại! Bạn vui lòng kiểm tra lại thông tin đăng nhập!');
       console.error('Lỗi đăng nhập:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,6 +129,8 @@ const Login: React.FC = () => {
               block
               type="primary"
               htmlType="submit"
+              loading={loading}
+              disabled={loading}
               style={{
                 height: '46px',
                 borderRadius: 'var(--radius-md)',
@@ -134,7 +140,7 @@ const Login: React.FC = () => {
                 boxShadow: 'var(--shadow-md)',
               }}
             >
-              Đăng nhập
+              {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
             </Button>
           </Form.Item>
 

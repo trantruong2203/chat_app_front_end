@@ -84,7 +84,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
   }, [fullMessages, currentUserId, items, groupMember, chatGroup]);
 
   return (
-    <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg-secondary)', minHeight: '100vh' }}>
+    <Content className="chat-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: 'var(--yahoo-bg)', minHeight: '100vh' }}>
       {chatPartner && <HeadMain chatPartner={chatPartner} memberCount={memberCount} onlineUsers={onlineUsers} />}
 
       <Space

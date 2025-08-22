@@ -1,69 +1,104 @@
-# React + TypeScript + Vite
+# Chat App Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ứng dụng chat với giao diện hiện đại và hỗ trợ Dark Mode.
 
-Currently, two official plugins are available:
+## Tính năng
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Dark Mode**: Hỗ trợ chuyển đổi giữa Light và Dark theme
+- **Responsive Design**: Giao diện thích ứng với mọi thiết bị
+- **Real-time Chat**: Chat real-time với Socket.IO
+- **Authentication**: Hệ thống đăng nhập/đăng ký
+- **Modern UI**: Sử dụng Ant Design với theme tùy chỉnh
 
-## Expanding the ESLint configuration
+## Dark Mode
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Cách sử dụng
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **Chuyển đổi theme**: Click vào nút theme toggle (☀️/🌙) trên navbar
+2. **Lưu trữ**: Theme được lưu vào localStorage và tự động áp dụng khi reload
+3. **System preference**: Tự động detect theme của hệ thống nếu chưa có lựa chọn
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### CSS Variables
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Dark mode sử dụng CSS variables để quản lý màu sắc:
+
+```css
+:root {
+  /* Light mode variables */
+  --yahoo-bg: #ffffff;
+  --yahoo-bg-secondary: #f8f9fa;
+  --yahoo-text: #1a1a1a;
+  --yahoo-border: #e1e5e9;
+  /* ... */
+}
+
+.dark {
+  /* Dark mode variables */
+  --yahoo-bg: #0f0f0f;
+  --yahoo-bg-secondary: #1a1a1a;
+  --yahoo-text: #ffffff;
+  --yahoo-border: #404040;
+  /* ... */
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Components hỗ trợ
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- ✅ Navbar
+- ✅ Main chat area
+- ✅ Cards và modals
+- ✅ Input fields
+- ✅ Buttons
+- ✅ Menu items
+- ✅ Tooltips
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Cài đặt
+
+```bash
+npm install
 ```
+
+## Chạy ứng dụng
+
+```bash
+npm run dev
+```
+
+## Cấu trúc dự án
+
+```
+src/
+├── components/          # UI components
+│   ├── ThemeToggle.tsx  # Nút chuyển đổi theme
+│   └── DarkMode.css    # CSS cho dark mode
+├── contexts/
+│   └── ThemeContext.tsx # Context quản lý theme
+├── hooks/
+│   └── useTheme.ts     # Hook sử dụng theme
+└── index.css           # CSS chính với variables
+```
+
+## Theme System
+
+### Light Mode
+- Background: Trắng (#ffffff)
+- Text: Đen (#1a1a1a)
+- Borders: Xám nhạt (#e1e5e9)
+- Shadows: Nhẹ với độ trong suốt thấp
+
+### Dark Mode
+- Background: Đen sẫm (#0f0f0f)
+- Text: Trắng (#ffffff)
+- Borders: Xám đậm (#404040)
+- Shadows: Đậm với độ trong suốt cao
+
+## Tùy chỉnh
+
+Để thay đổi màu sắc, chỉnh sửa CSS variables trong `src/index.css` và `src/components/DarkMode.css`.
+
+## Browser Support
+
+- Chrome 88+
+- Firefox 85+
+- Safari 14+
+- Edge 88+

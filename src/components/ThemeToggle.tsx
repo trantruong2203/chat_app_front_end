@@ -26,6 +26,24 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
         className={`theme-toggle ${className}`}
         style={{
           color: themeMode === 'light' ? 'var(--yahoo-text)' : 'var(--yahoo-text)',
+          transition: 'var(--theme-transition)',
+          borderRadius: '50%',
+          width: size === 'small' ? '32px' : size === 'middle' ? '40px' : '48px',
+          height: size === 'small' ? '32px' : size === 'middle' ? '40px' : '48px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: `1px solid var(--yahoo-border)`,
+          backgroundColor: 'var(--yahoo-card-bg)',
+          boxShadow: 'var(--yahoo-shadow-light)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+          e.currentTarget.style.boxShadow = 'var(--yahoo-shadow)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = 'var(--yahoo-shadow-light)';
         }}
       />
     </Tooltip>

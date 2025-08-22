@@ -4,7 +4,6 @@ import { Menu, Divider } from 'antd';
 import { 
   MessageOutlined, 
   UserOutlined,
-  SettingOutlined,
   AppstoreOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +18,7 @@ function getItem(
 ): MenuItem {
   return {
     key,
-    icon,
-    label: null, // Không hiển thị text, chỉ hiển thị icon
+    icon
   } as MenuItem;
 }
 
@@ -28,7 +26,6 @@ const itemsMenu: MenuItem[] = [
   getItem('1', <MessageOutlined style={{ fontSize: '20px' }} />),
   getItem('2', <UserOutlined style={{ fontSize: '20px' }} />),
   getItem('3', <AppstoreOutlined style={{ fontSize: '20px' }} />),
-  getItem('4', <SettingOutlined style={{ fontSize: '20px' }} />),
 ];
 
 const MobileNavbar: React.FC = () => {

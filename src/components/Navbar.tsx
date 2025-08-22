@@ -4,7 +4,6 @@ import { Avatar, Layout, Menu, Tooltip, Divider } from 'antd';
 import { 
   MessageOutlined, 
   UserOutlined,
-  SettingOutlined,
   AppstoreOutlined
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,7 +35,6 @@ const itemsMenu: MenuItem[] = [
   getItem( '', '1', <MessageOutlined />),
   getItem( '', '2', <UserOutlined />),
   getItem( '', '3', <AppstoreOutlined />),
-  getItem( '', '4', <SettingOutlined />),
 ];
 
 const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void }> = ({ setIsUserModalOpen }) => {

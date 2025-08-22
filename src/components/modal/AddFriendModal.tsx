@@ -9,7 +9,6 @@ import { ContextAuth } from '../../contexts/AuthContext';
 import { getObjectById } from '../../services/respone';
 import { toast } from 'react-toastify';
 
-
 const { Text } = Typography;
 
 const AddFriendModal: React.FC<{
@@ -27,6 +26,12 @@ const AddFriendModal: React.FC<{
 
   const getFrienShip = (): JSX.Element | string => {
     const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
+    
+    // Kiểm tra nếu người dùng tìm kiếm ra chính mình
+    if (currentUserId === findUser.id) {
+      return "Đây là tài khoản của bạn";
+    }
+    
     const findFriendShip = friendShip.find(item => 
       // Kiểm tra nếu người dùng hiện tại đã gửi lời mời kết bạn cho người được tìm kiếm
       (item.userid == currentUserId && item.sentat == findUser.id) || 
@@ -52,6 +57,7 @@ const AddFriendModal: React.FC<{
     if (findFriendShip && findFriendShip.status === 1) {
       return "Đã gửi lời mời kết bạn";
     }
+  
     return '';
   };
 
@@ -126,7 +132,13 @@ const AddFriendModal: React.FC<{
         </div>
         <Divider style={{ margin: '16px 0' }} />
         <div style={{ marginBottom: '8px' }}>
-          <Text strong style={{ fontSize: '14px' }}>Kết quả tìm kiếm</Text>
+          <Text 
+            strong 
+            style={{ fontSize: '14px' }}
+            onClick={() => handleOpenNotFriendModal(findUser)}
+          >
+            Kết quả tìm kiếm
+          </Text>
         </div>
         {
           findUser.email ? (

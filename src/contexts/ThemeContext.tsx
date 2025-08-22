@@ -35,28 +35,57 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Lưu theme vào localStorage
     localStorage.setItem('theme-mode', themeMode);
     
-    // Cập nhật class trên body
+    // Cập nhật class trên body với transition
     document.body.className = themeMode;
     
-    // Cập nhật CSS variables
+    // Cập nhật CSS variables với transition mượt mà
+    const root = document.documentElement;
+    
+    // Thêm transition cho tất cả CSS variables
+    root.style.setProperty('--theme-transition', 'all 0.3s ease-in-out');
+    
     if (themeMode === 'dark') {
-      document.documentElement.style.setProperty('--yahoo-bg', '#1f1f1f');
-      document.documentElement.style.setProperty('--yahoo-bg-secondary', '#2d2d2d');
-      document.documentElement.style.setProperty('--yahoo-text', '#ffffff');
-      document.documentElement.style.setProperty('--yahoo-text-secondary', '#b0b0b0');
-      document.documentElement.style.setProperty('--yahoo-border', '#404040');
-      document.documentElement.style.setProperty('--yahoo-primary', '#7206f7');
-      document.documentElement.style.setProperty('--yahoo-primary-hover', '#5a05c7');
-      document.documentElement.style.setProperty('--yahoo-success', '#52c41a');
+      // Dark mode variables
+      root.style.setProperty('--yahoo-bg', '#0f0f0f');
+      root.style.setProperty('--yahoo-bg-secondary', '#1a1a1a');
+      root.style.setProperty('--yahoo-bg-tertiary', '#2d2d2d');
+      root.style.setProperty('--yahoo-text', '#ffffff');
+      root.style.setProperty('--yahoo-text-secondary', '#b0b0b0');
+      root.style.setProperty('--yahoo-text-tertiary', '#808080');
+      root.style.setProperty('--yahoo-border', '#404040');
+      root.style.setProperty('--yahoo-border-light', '#2a2a2a');
+      root.style.setProperty('--yahoo-primary', '#7206f7');
+      root.style.setProperty('--yahoo-primary-hover', '#5a05c7');
+      root.style.setProperty('--yahoo-success', '#52c41a');
+      root.style.setProperty('--yahoo-warning', '#faad14');
+      root.style.setProperty('--yahoo-error', '#ff4d4f');
+      root.style.setProperty('--yahoo-shadow', '0 4px 12px rgba(0, 0, 0, 0.3)');
+      root.style.setProperty('--yahoo-shadow-light', '0 2px 8px rgba(0, 0, 0, 0.2)');
+      root.style.setProperty('--yahoo-overlay', 'rgba(0, 0, 0, 0.7)');
+      root.style.setProperty('--yahoo-card-bg', '#1f1f1f');
+      root.style.setProperty('--yahoo-input-bg', '#2a2a2a');
+      root.style.setProperty('--yahoo-hover-bg', '#2d2d2d');
     } else {
-      document.documentElement.style.setProperty('--yahoo-bg', '#ffffff');
-      document.documentElement.style.setProperty('--yahoo-bg-secondary', '#f8f9fa');
-      document.documentElement.style.setProperty('--yahoo-text', '#1a1a1a');
-      document.documentElement.style.setProperty('--yahoo-text-secondary', '#666666');
-      document.documentElement.style.setProperty('--yahoo-border', '#e1e5e9');
-      document.documentElement.style.setProperty('--yahoo-primary', '#7206f7');
-      document.documentElement.style.setProperty('--yahoo-primary-hover', '#5a05c7');
-      document.documentElement.style.setProperty('--yahoo-success', '#52c41a');
+      // Light mode variables
+      root.style.setProperty('--yahoo-bg', '#ffffff');
+      root.style.setProperty('--yahoo-bg-secondary', '#f8f9fa');
+      root.style.setProperty('--yahoo-bg-tertiary', '#f1f3f4');
+      root.style.setProperty('--yahoo-text', '#1a1a1a');
+      root.style.setProperty('--yahoo-text-secondary', '#666666');
+      root.style.setProperty('--yahoo-text-tertiary', '#999999');
+      root.style.setProperty('--yahoo-border', '#e1e5e9');
+      root.style.setProperty('--yahoo-border-light', '#f0f0f0');
+      root.style.setProperty('--yahoo-primary', '#7206f7');
+      root.style.setProperty('--yahoo-primary-hover', '#5a05c7');
+      root.style.setProperty('--yahoo-success', '#52c41a');
+      root.style.setProperty('--yahoo-warning', '#faad14');
+      root.style.setProperty('--yahoo-error', '#ff4d4f');
+      root.style.setProperty('--yahoo-shadow', '0 4px 12px rgba(0, 0, 0, 0.1)');
+      root.style.setProperty('--yahoo-shadow-light', '0 2px 8px rgba(0, 0, 0, 0.08)');
+      root.style.setProperty('--yahoo-overlay', 'rgba(0, 0, 0, 0.3)');
+      root.style.setProperty('--yahoo-card-bg', '#ffffff');
+      root.style.setProperty('--yahoo-input-bg', '#ffffff');
+      root.style.setProperty('--yahoo-hover-bg', '#f5f5f5');
     }
   }, [themeMode]);
 
