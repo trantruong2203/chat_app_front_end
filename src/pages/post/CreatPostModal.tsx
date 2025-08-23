@@ -91,19 +91,22 @@ const CreatPostModal: React.FC<CreatPostModalProps> = ({
                     }
                 });
 
-                await Promise.allSettled(uploadPromises);                
+                await Promise.allSettled(uploadPromises);
+                
+                // Cập nhật lại ảnh cho post mới để hiển thị ngay lập tức
+                if (postId > 0) {
+                    await dispatch(getPostImages(postId)).unwrap();
+                }
             }
+            
             setOpen(false);
             setNewPostContent('');
             setSelectedImages([]);
             setPreviewImages([]);
             setUploadFileList([]);
 
+            // Refresh lại toàn bộ posts để cập nhật UI
             await dispatch(getPosts()).unwrap();
-            
-            if (postId > 0) {
-                await dispatch(getPostImages(postId)).unwrap();
-            }
             
         } catch (error) {
             console.error("Lỗi khi đăng bài viết:", error);

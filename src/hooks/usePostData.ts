@@ -31,6 +31,7 @@ export const usePostData = (
 ): UsePostDataReturn => {
   const dispatch = useAppDispatch();
   const posts = useAppSelector((state) => state.post.items);
+  const postImages = useAppSelector((state) => state.postImage.items);
 
   const [allPosts, setAllPosts] = useState<PostUI[]>([]);
   const [postImagesMap, setPostImagesMap] = useState<{ [postId: number]: string[] }>({});
@@ -144,6 +145,25 @@ export const usePostData = (
       }
     }
   }, [getFilteredPosts, debouncedLoadImages]);
+
+  // Cập nhật postImagesMap khi có thay đổi trong postImages store
+  useEffect(() => {
+    if (postImages.length > 0) {
+      const newImagesMap: { [postId: number]: string[] } = {};
+      
+      postImages.forEach(image => {
+        if (image.postid) {
+          if (!newImagesMap[image.postid]) {
+            newImagesMap[image.postid] = [];
+          }
+          newImagesMap[image.postid].push(image.imgurl);
+        }
+      });
+      
+      // Cập nhật postImagesMap với ảnh mới
+      setPostImagesMap(prev => ({ ...prev, ...newImagesMap }));
+    }
+  }, [postImages]);
 
   // Refresh function
   const refreshPosts = useCallback(() => {

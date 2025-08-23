@@ -47,7 +47,15 @@ const postImageSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(getPostImages.fulfilled, (state, action) => {
-        state.items = action.payload as PostImage[];
+        console.log('action.payload', action.payload);
+        
+        // Merge ảnh mới với ảnh hiện có thay vì ghi đè
+        const newImages = action.payload as PostImage[];
+        const existingImages = state.items.filter(item => 
+          !newImages.some(newImg => newImg.postid === item.postid)
+        );
+        
+        state.items = [...existingImages, ...newImages];
         state.status = 'succeeded';
         state.error = null;
       })
@@ -61,11 +69,25 @@ const postImageSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(sendPostImageThunk.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.items.push(action.payload.data);
+        console.log('action.payload', action.payload);
+        
+        if (action.payload && action.payload.data) {
+          // Kiểm tra xem ảnh đã tồn tại chưa để tránh duplicate
+          const existingIndex = state.items.findIndex(
+            item => item.id === action.payload.data.id
+          );
+          
+          if (existingIndex === -1) {
+            // Thêm ảnh mới vào state
+            state.items.push(action.payload.data);
+          } else {
+            // Cập nhật ảnh nếu đã tồn tại
+            state.items[existingIndex] = action.payload.data;
+          }
+          
           state.status = 'succeeded';
+          state.error = null;
         }
-        state.error = null;
       })
       .addCase(sendPostImageThunk.rejected, (state, action) => {
         state.status = 'failed';
