@@ -13,38 +13,54 @@ interface AuthProviderProps {
 
 function AuthProvider({ children }: AuthProviderProps) {
     const [accountLogin, setAccountLogin] = useState<UserResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        getToken();
-    }, []);
+        if (!hasCheckedAuth) {
+            getToken();
+        }
+    }, [hasCheckedAuth]);
 
     const getToken = async () => {
         try {
+            setIsLoading(true);
             const response = await axios.get(`${API}/user/me`, {
                 withCredentials: true
             });
             setAccountLogin(response.data.user);
         } catch (error) {
-            console.log(error);
+            console.log('Authentication check failed:', error);
             setAccountLogin(null);
-            navigate('/');
+        } finally {
+            setIsLoading(false);
+            setHasCheckedAuth(true);
         }
     };
 
     const logout = async () => {
-        await axios.post(`${API}/user/logout`, {}, {
-            withCredentials: true,
-        });
-        setAccountLogin(null);
-        navigate('/');
+        try {
+            await axios.post(`${API}/user/logout`, {}, {
+                withCredentials: true,
+            });
+        } catch (error) {
+            console.log('Logout error:', error);
+        } finally {
+            setAccountLogin(null);
+            setHasCheckedAuth(false);
+            // Chỉ navigate nếu không đang ở trang login
+            if (window.location.pathname !== '/') {
+                navigate('/');
+            }
+        }
     };
-
 
     const authContextValue: AuthContextType = {
         accountLogin,
         logout,
         getToken,
+        isLoading,
     };
 
     return (

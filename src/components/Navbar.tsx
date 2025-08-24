@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import type { MenuProps } from 'antd';
-import { Avatar, Layout, Menu, Tooltip, Divider } from 'antd';
+import { Avatar, Layout, Menu, Tooltip } from 'antd';
 import { 
   MessageOutlined, 
   UserOutlined,
@@ -12,7 +12,6 @@ import { ContextAuth } from '../contexts/AuthContext';
 import { getObjectById } from '../services/respone';
 import { useNavigate } from 'react-router-dom';
 import { setUser } from '../features/users/userSlice';
-import ThemeToggle from './ThemeToggle';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const { Sider } = Layout;
@@ -62,22 +61,27 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
 
   return (
     <Sider
-      className="app-navbar"
+     
       width={80}
       style={{ 
         borderRight: '1px solid var(--yahoo-border)',
         zIndex: 1000,
         background: 'var(--yahoo-primary)',
-        minWidth: '80px'
+        minWidth: '80px',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh'
       }}
     >
+      {/* Header Section với Avatar */}
       <div 
         style={{ 
-          padding: '20px 0', 
+          padding: '24px 0 16px 0', 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center',
-          marginBottom: '20px'
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          marginBottom: '16px'
         }}
       >
         <Tooltip title="Hồ sơ cá nhân" placement="right">
@@ -89,10 +93,11 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              width: '45px',
-              height: '45px',
+              width: '48px',
+              height: '48px',
               border: '2px solid rgba(255, 255, 255, 0.3)',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
             }}
             src={user?.avatar || null}
             onClick={() => setIsUserModalOpen(true)}
@@ -100,42 +105,24 @@ const Navbar: React.FC<{ setIsUserModalOpen: (isUserModalOpen: boolean) => void 
         </Tooltip>
       </div>
     
-      <Menu
-        theme="dark"
-        defaultSelectedKeys={['1']}
-        mode="inline"
-        items={itemsMenu}
-        onClick={onMenuClick}
-        style={{ 
-          borderRight: 0,
-          textAlign: 'center',
-          background: 'transparent'
-        }}
-      />
-
-      <div style={{ 
-        position: 'absolute', 
-        bottom: '20px', 
-        left: '50%', 
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '12px'
-      }}>
-        <Divider style={{ 
-          margin: '0', 
-          borderColor: 'rgba(255, 255, 255, 0.2)',
-          width: '40px'
-        }} />
-        <ThemeToggle 
-          size="small" 
-          type="text" 
-          className="navbar-theme-toggle"
+      {/* Menu Section */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        
+        <Menu
+          theme="dark"
+          defaultSelectedKeys={['1']}
+          mode="inline"
+          items={itemsMenu}
+          onClick={onMenuClick}
+          style={{ 
+            borderRight: 0,
+            textAlign: 'center',
+            background: 'transparent',
+            flex: 1
+          }}
         />
       </div>
-      
-    </Sider >
+    </Sider>
   );
 };
 

@@ -52,6 +52,7 @@ function Messages() {
     const groupId = isGroupChat ? id : null;
     const [handleLastMess, setHandleLastMess] = useState<Message | null>(null);
     const { isMobile } = useResponsive();
+    const [loading, setLoading] = useState(false);
 
     const [findUser, setFindUser] = useState<UserResponse>({
         id: 0,
@@ -225,7 +226,9 @@ function Messages() {
                 messageid: 0
             };
 
-         await dispatch(sendMessageThunk(newMessage)).unwrap();
+            setLoading(true);
+            await dispatch(sendMessageThunk(newMessage)).unwrap();
+            setLoading(false);
             setMessageContent('');
             const filteredMessages = messages.filter(message =>
                 (message.senderid === currentUserId && message.receiverid === chatPartnerId) ||
@@ -321,6 +324,7 @@ function Messages() {
                         handleMessageSelection={handleMessageSelection}
                         groupMember={groupMember}
                         onlineUsers={onlineUsers}
+                        loading={loading}
                     />
                 </Layout>
             </Layout>

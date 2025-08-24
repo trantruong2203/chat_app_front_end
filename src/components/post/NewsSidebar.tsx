@@ -40,14 +40,12 @@ const NewsSidebar: React.FC<NewsSidebarProps> = React.memo(({
         overflow: 'auto',
         height: 'calc(100vh - 0px)',
         position: 'fixed',
-        left: 60,
-        top: 0,
-        bottom: 0,
-        backgroundColor: '#f0f2f5',
+        left: 80,
+        backgroundColor: 'var(--yahoo-bg)',
         padding: '20px 10px',
-        boxShadow: '1px 0 3px rgba(0, 0, 0, 0.05)'
+        boxShadow: '1px 0 3px var(--yahoo-border)'
       }}
-      theme="light"
+      theme="dark"
     >
       <div style={{ marginBottom: 16, padding: '0 5px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>

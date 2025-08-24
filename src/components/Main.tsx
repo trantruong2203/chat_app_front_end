@@ -24,9 +24,10 @@ interface MainProps {
   fullMessages: Message[];
   groupMember: GroupMember[];
   onlineUsers: OnlineUser[];
+  loading: boolean;
 }
 
-const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, fullMessages, handleMessageSelection, groupMember, onlineUsers }) => {
+const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, fullMessages, handleMessageSelection, groupMember, onlineUsers, loading }) => {
   const { items } = useSelector((state: RootState) => state.user);
   const { accountLogin } = useContext(ContextAuth);
   const currentUserId = getObjectById(items, accountLogin?.email ?? '')?.id;
@@ -210,6 +211,7 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
         <Button
           type="primary"
           icon={<SendOutlined />}
+          loading={loading}
           onClick={handleSendMessage}
           disabled={!handleMessageSelection || !message.trim()}
           style={{
@@ -224,7 +226,6 @@ const Main: React.FC<MainProps> = ({ message, setMessage, handleSendMessage, ful
         </Button>
       </div>
 
-      {/* Đã gỡ EmojiPicker */}
     </Content>
   );
 };

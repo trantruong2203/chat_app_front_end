@@ -10,6 +10,7 @@ import AuthRouter from './routers/AuthRouter';
 import Home from './pages/Home.js';
 import { ConfigProvider, theme } from 'antd';
 import 'antd/dist/reset.css';
+import Loading from './components/Loading';
 
 // Theme Yahoo với màu tím đặc trưng
 const yahooTheme = {
@@ -108,8 +109,17 @@ const yahooDarkTheme = {
 };
 
 function AppContent() {
-  const { accountLogin } = useContext(ContextAuth);
+  const { accountLogin, isLoading } = useContext(ContextAuth);
   const { themeMode } = useTheme();
+  
+  // Hiển thị loading khi đang kiểm tra authentication
+  if (isLoading) {
+    return (
+      <ConfigProvider theme={themeMode === 'dark' ? yahooDarkTheme : yahooTheme}>
+        <Loading message="Đang kiểm tra đăng nhập..." fullScreen={true} />
+      </ConfigProvider>
+    );
+  }
   
   return (
     <ConfigProvider theme={themeMode === 'dark' ? yahooDarkTheme : yahooTheme}>
